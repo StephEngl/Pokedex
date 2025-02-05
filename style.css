@@ -1,6 +1,5 @@
 body {
     margin: 0;
-    background-color: aquamarine;
 }
 
 header {
@@ -26,7 +25,6 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid black;
     border-radius: 12px;
     position: relative;
     overflow: hidden;
@@ -56,6 +54,58 @@ header {
 
 .bg_electric {
   background-color: #ffd672;
+}
+
+.bg_normal {
+  background-color: #A8A77A;
+}
+
+.bg_ice {
+  background-color: #96D9D6;
+}
+
+.bg_fighting {
+  background-color: #C22E28;
+}
+
+.bg_poison {
+  background-color: #A33EA1;
+}
+
+.bg_ground {
+  background-color: #E2BF65;
+}
+
+.bg_flying {
+  background-color: #A98FF3;
+}
+
+.bg_psychic {
+  background-color: #F95587;
+}
+
+.bg_bug {
+  background-color: #A6B91A;
+}
+
+.bg_rock {
+  background-color: #B6A136;
+}
+
+.bg_ghost {
+  background-color: #735797;
+}
+.bg_dragon {
+  background-color: #6F35FC;
+}
+.bg_dark {
+  background-color: #705746;
+}
+.bg_steel {
+  background-color: #B7B7CE;
+}
+.bg_fairy {
+  background-color: #D685AD;
 }
 
 /* Loadingspinner */
