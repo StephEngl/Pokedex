@@ -1,5 +1,6 @@
-let pokemon_names_german = [
-  "Bisasam",
+let pokemon_names_german = [{
+  "#0001": "Bisasam",
+}
   "Bisaknosp",
   "Bisaflor",
   "Glumanda",

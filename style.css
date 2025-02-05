@@ -1,5 +1,62 @@
+body {
+    margin: 0;
+    background-color: aquamarine;
+}
 
+header {
+  height: 100px;
+  background-color: grey;
+  margin-bottom: 32px;
+}
 
+.cards_wrapper {
+    max-width: 1440px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+}
+
+.cards_content {
+    text-transform: capitalize;
+    width: 200px;
+    height: 140px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid black;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.pokeball-background {
+  width: 160px;
+  height: 160px;
+  position: absolute;
+  right: -40px;  /* 1/4 des Balls (30px) ist außerhalb der Karte */
+  bottom: -40px; /* 1/4 des Balls (30px) ist außerhalb der Karte */
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.bg_grass {
+  background-color: #49d0b0;
+}
+
+.bg_fire {
+  background-color: #fc6c6c;
+}
+
+.bg_water {
+  background-color: #76befe;
+}
+
+.bg_electro {
+  background-color: #ffd672;
+}
 
 /* Loadingspinner */
 .loading_spinner {

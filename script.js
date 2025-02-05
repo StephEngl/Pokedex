@@ -1,37 +1,40 @@
 let pokemonData = [];
+let responseAsJsonType = [];
 
-async function fetchPokemonData() {
-    let responseType = await fetch("https://pokeapi.co/api/v2/pokemon-species");
-    let typeData = await responseType.json();
-    console.log(typeData);
+
+async function renderPokemonCards(start, end) {
+  showSpinner();
+  // get pokemon
+  const pokemon = await fetchPokemon(start, end);
+  hideSpinner();
+
+  for (let i = 0; i < pokemon.length; i++) {
+    const pokemonName = pokemon[i].name;
+    const pokemonURL = pokemon[i].url;
+    document.getElementById("cards_wrapper").innerHTML += getCardsTemplate(i, "fire");
+    document.getElementById("pokemon_name_" + [i]).innerHTML = pokemonName;
+    await fetchPokemonDetails(i, pokemonURL);
+  }
 }
 
+async function fetchPokemon(offset, limit) {
+  let response = await fetch(
+    `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`
+  );
+  responseAsJson = await response.json();
+  return responseAsJson.results;
+}
 
-// async function fetchPokemonData() {
-//   for (let i = 1; i <= 1025; i++) {
-//     const response = await fetch(
-//       `https://pokeapi.co/api/v2/pokemon-species/${i}`
-//     );
-//     const speciesData = await response.json();
-
-//     const pokemonResponse = await fetch(
-//       `https://pokeapi.co/api/v2/pokemon/${i}`
-//     );
-//     const pokemonData = await pokemonResponse.json();
-
-//     const germanName = speciesData.names.find(
-//       (name) => name.language.name === "de"
-//     ).name;
-
-//     pokemonData.push({
-//       id: i,
-//       name: germanName,
-//       typen: pokemonData.types.map((type) => translateType(type.type.name)),
-//     });
-//   }
-
-//   return JSON.stringify(pokemonData, null, 2);
-// }
+async function fetchPokemonDetails(i, url) {
+  const response = await fetch(url);
+  const responseAsJson = await response.json();
+  let responseAsJsonType = responseAsJson.types;
+  for (let j = 0; j < responseAsJsonType.length; j++) {
+    let pokemonType = responseAsJsonType[j].type.name;
+    console.log(pokemonType);
+    document.getElementById("pokemon_info_" + [i]).innerHTML += getTypesTemplate(j, pokemonType); 
+  }
+}
 
 function translateType(englishType) {
   const typeTranslations = {
@@ -57,13 +60,6 @@ function translateType(englishType) {
   return typeTranslations[englishType] || englishType;
 }
 
-// fetchPokemonData().then((json) => console.log(json));
-
-
-
-
-
-
 // Loading Spinner
 function showSpinner() {
   document.getElementById("loading_spinner").style.display = "block";
@@ -74,7 +70,7 @@ function hideSpinner() {
 }
 
 // Beispiel für die Verwendung:
-showSpinner();
+// showSpinner();
 // Führen Sie hier Ihre asynchrone Operation durch
 // Wenn die Operation abgeschlossen ist:
 // hideSpinner();

@@ -1,0 +1,17 @@
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <defs>
+          <mask id="pokeball-mask">
+            <rect width="200" height="200" fill="white"/>
+            <!-- Kreisrundes Loch in der Mitte -->
+            <circle cx="100" cy="100" r="37.5" fill="black"/>
+            <!-- Horizontale Linie -->
+            <rect x="0" y="92.5" width="200" height="15" fill="black"/>
+          </mask>
+        </defs>
+      
+        <!-- Äußerer Ring (leicht durchscheinend weiß) -->
+        <circle cx="100" cy="100" r="100" fill="rgba(255,255,255,0.7)" mask="url(#pokeball-mask)"/>
+      
+        <!-- Mittlerer Kreis (gleiche Farbe wie der äußere Ring) -->
+        <circle cx="100" cy="100" r="25" fill="rgba(255,255,255,0.7)"/>
+      </svg>
