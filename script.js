@@ -4,16 +4,26 @@ let responseAsJsonType = [];
 
 async function renderPokemonCards(start, end) {
   showSpinner();
-  // get pokemon
   const pokemon = await fetchPokemon(start, end);
   hideSpinner();
 
   for (let i = 0; i < pokemon.length; i++) {
     const pokemonName = pokemon[i].name;
     const pokemonURL = pokemon[i].url;
-    document.getElementById("cards_wrapper").innerHTML += getCardsTemplate(i, "fire");
-    document.getElementById("pokemon_name_" + [i]).innerHTML = pokemonName;
-    await fetchPokemonDetails(i, pokemonURL);
+    
+    document.getElementById("cards_wrapper").innerHTML += getCardsTemplate(i, "");
+    
+    const pokemonFirstType = await fetchPokemonDetails(i, pokemonURL);
+    updateCardBackground(i, pokemonFirstType);
+    
+    document.getElementById("pokemon_name_" + i).innerHTML = pokemonName;
+  }
+}
+
+function updateCardBackground(index, type) {
+  const card = document.getElementById("cards_content_" + index);
+  if (card) {
+    card.className = `cards_content bg_${type}`;
   }
 }
 
@@ -29,11 +39,14 @@ async function fetchPokemonDetails(i, url) {
   const response = await fetch(url);
   const responseAsJson = await response.json();
   let responseAsJsonType = responseAsJson.types;
+  let pokemonFirstType = responseAsJsonType[0].type.name; // Nimmt den ersten Typ
+
   for (let j = 0; j < responseAsJsonType.length; j++) {
     let pokemonType = responseAsJsonType[j].type.name;
-    console.log(pokemonType);
     document.getElementById("pokemon_info_" + [i]).innerHTML += getTypesTemplate(j, pokemonType); 
   }
+
+  return pokemonFirstType;
 }
 
 function translateType(englishType) {
