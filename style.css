@@ -1,43 +1,107 @@
 body {
-    margin: 0;
+  margin: 0;
+  scroll-behavior: smooth;
+  font-family: Verdana, Geneva, Tahoma, Impact, Haettenschweiler,
+    "Arial Narrow Bold", sans-serif;
 }
 
+button {
+  background-color: #49d0b0;
+  border-radius: 16px;
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 5px 5px 10px lightslategray;
+}
+
+button:hover {
+  scale: 1.03;
+}
+
+.d_none {
+  display: none;
+}
+
+/* Header Section */
 header {
-  height: 100px;
+  display: flex;
+  justify-content: center;
+  padding: 16px;
   background-color: grey;
-  margin-bottom: 32px;
 }
 
+.header_content {
+  max-width: 1440px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Main Section */
+
+main {
+  margin: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
 .cards_wrapper {
-    max-width: 1440px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 24px;
+  max-width: 1440px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 36px;
 }
 
 .cards_content {
-    text-transform: capitalize;
-    width: 200px;
-    height: 140px;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 12px;
-    position: relative;
-    overflow: hidden;
+  text-transform: capitalize;
+  width: 250px;
+  height: 160px;
+  padding: 16px;
+  box-shadow: 5px 5px 10px lightslategray;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cards_content:hover {
+  scale: 1.03;
+  cursor: pointer;
+}
+
+.pokemon_info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pokemon_type {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 14px;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
 }
 
 .pokeball-background {
   width: 160px;
   height: 160px;
   position: absolute;
-  right: -40px;  /* 1/4 des Balls (30px) ist außerhalb der Karte */
+  right: -40px; /* 1/4 des Balls (30px) ist außerhalb der Karte */
   bottom: -40px; /* 1/4 des Balls (30px) ist außerhalb der Karte */
   opacity: 0.2;
   pointer-events: none;
+}
+
+.pokemon_image {
+  z-index: 1;
 }
 
 .bg_grass {
@@ -57,75 +121,78 @@ header {
 }
 
 .bg_normal {
-  background-color: #A8A77A;
+  background-color: #a8a77a;
 }
 
 .bg_ice {
-  background-color: #96D9D6;
+  background-color: #96d9d6;
 }
 
 .bg_fighting {
-  background-color: #C22E28;
+  background-color: #c22e28;
 }
 
 .bg_poison {
-  background-color: #A33EA1;
+  background-color: #a33ea1;
 }
 
 .bg_ground {
-  background-color: #E2BF65;
+  background-color: #e2bf65;
 }
 
 .bg_flying {
-  background-color: #A98FF3;
+  background-color: #a98ff3;
 }
 
 .bg_psychic {
-  background-color: #F95587;
+  background-color: #f95587;
 }
 
 .bg_bug {
-  background-color: #A6B91A;
+  background-color: #a6b91a;
 }
 
 .bg_rock {
-  background-color: #B6A136;
+  background-color: #b6a136;
 }
 
 .bg_ghost {
   background-color: #735797;
 }
 .bg_dragon {
-  background-color: #6F35FC;
+  background-color: #6f35fc;
 }
 .bg_dark {
   background-color: #705746;
 }
 .bg_steel {
-  background-color: #B7B7CE;
+  background-color: #b7b7ce;
 }
 .bg_fairy {
-  background-color: #D685AD;
+  background-color: #d685ad;
 }
 
 /* Loadingspinner */
 .loading_spinner {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+
+.loading_spinner img {
+  width: 150px;
+  height: 150px;
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
-  
-  .loading_spinner img {
-    width: 150px;
-    height: 150px;
-    animation: spin 1.5s linear infinite;
+  100% {
+    transform: rotate(360deg);
   }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
+}

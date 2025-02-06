@@ -15,15 +15,20 @@
     <script src="script.js" defer></script>
     <script src="template.js" defer></script>
   </head>
-  <body onload="renderPokemonCards(0, 20);">
+  <body onload="init();">
     <!-- Header Section -->
-    <header></header>
+    <header>
+      <div class="header_content">
+        <h1>Pokédex</h1>
+        <input type="text" placeholder="Bitte Namen eingeben...">
+      </div>
+    </header>
 
     <!-- Main Section -->
     <main>
       <div class="cards_wrapper" id="cards_wrapper">
-        
       </div>
+      <button onclick="loadMorePokemon()">Weitere anzeigen...</button>
 
     <!-- Loading Spinner -->
     <div id="loading_spinner" class="loading_spinner">
