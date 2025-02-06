@@ -1,7 +1,7 @@
-let pokemonDetails = [];
 let pokemon = [];
 let currentOffset = 0;
-const limitLoadingPokemon = 20;
+const limitLoadingPokemon = 50;
+let currIndex = 1;
 
 function init() {
   renderPokemonCards(0, limitLoadingPokemon);
@@ -34,14 +34,16 @@ function addNewPokemonCards(start, count) {
 async function updatePokemonDetails(start, count) {
   for (let i = start; i < start + count; i++) {
     if (!pokemon[i].details) {
-      const details = await fetchPokemonDetails(i, pokemon[i].url);
-      pokemon[i].details = details.details;
-      pokemon[i].firstType = details.firstType;
+      const monsterDetails = await fetchPokemonDetails(i, pokemon[i].url);
+      pokemon[i].details = monsterDetails.details;
+      pokemon[i].firstType = monsterDetails.firstType;
     }
 
     const pokemonName = pokemon[i].name;
+    const pokemonId = pokemon[i].details.id;
     updateCardBackground(i, pokemon[i].firstType);
     document.getElementById("pokemon_name_" + i).innerHTML = pokemonName;
+    document.getElementById("pokemon_id_" + i).innerHTML = "#" + ('000' + pokemonId).slice(-4)
   }
 }
 
@@ -101,6 +103,20 @@ function renderPokemonTypes(i, types) {
   });
 }
 
+// Show Dialog -> DetailCard
+function openDetailCard() {
+  let refOverlay = document.getElementById("overlay");
+  refOverlay.showModal();
+  // showImage(currIndex);
+}
+
+function onMouseDown(event) {
+  const dialog = document.getElementById("overlay");
+  if (event.target === dialog) {
+    dialog.close();
+  }
+}
+
 function translateType(englishType) {
   const typeTranslations = {
     normal: "Normal",
@@ -134,9 +150,3 @@ function hideSpinner() {
   document.getElementById("loading_spinner").style.display = "none";
   document.getElementById("cards_wrapper").style.display = "flex";
 }
-
-// Beispiel für die Verwendung:
-// showSpinner();
-// Führen Sie hier Ihre asynchrone Operation durch
-// Wenn die Operation abgeschlossen ist:
-// hideSpinner();

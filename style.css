@@ -5,6 +5,14 @@ body {
     "Arial Narrow Bold", sans-serif;
 }
 
+h3, p {
+  margin: 0;
+}
+
+h3 {
+  margin-bottom: 16px;
+}
+
 button {
   background-color: #49d0b0;
   border-radius: 16px;
@@ -36,6 +44,16 @@ header {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+}
+
+.header_logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header_logo>img {
+  height: 50px;
 }
 
 /* Main Section */
@@ -77,7 +95,7 @@ main {
 .pokemon_info {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  /* gap: 12px; */
 }
 
 .pokemon_type {
@@ -88,6 +106,11 @@ main {
   align-items: center;
   justify-content: center;
   width: fit-content;
+  margin-bottom: 12px;
+}
+
+.pokemon_id, .pokemon_type {
+  color: rgb(63, 62, 62);
 }
 
 .pokeball-background {
@@ -170,6 +193,36 @@ main {
 }
 .bg_fairy {
   background-color: #d685ad;
+}
+
+/* DetailCards */
+dialog {
+  max-width: 1440px;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  width: 400px;
+  height: 70%;
+  z-index: 3;
+  border-radius: 8px;
+  border-width: 0;
+  filter: drop-shadow(8px 8px 16px rgba(0, 0, 0, 0.7));
+}
+
+dialog::backdrop {
+  backdrop-filter: blur(20px);
+}
+
+dialog:focus-visible {
+  outline: 0;
+}
+
+.detail_card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 /* Loadingspinner */

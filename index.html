@@ -6,7 +6,7 @@
     <title>Pokédex</title>
     <link
       rel="shortcut icon"
-      href="assets/img/pokeball.png
+      href="assets/icons/pokeball.png
     "
       type="image/x-icon"
     />
@@ -19,7 +19,10 @@
     <!-- Header Section -->
     <header>
       <div class="header_content">
-        <h1>Pokédex</h1>
+        <div class="header_logo">
+          <img src="assets/icons/pokeball.png" alt="Pokéball Logo">
+          <h1>Pokédex</h1>
+        </div>
         <input type="text" placeholder="Bitte Namen eingeben...">
       </div>
     </header>
@@ -29,6 +32,10 @@
       <div class="cards_wrapper" id="cards_wrapper">
       </div>
       <button onclick="loadMorePokemon()">Weitere anzeigen...</button>
+
+      <dialog id="overlay" onmousedown="onMouseDown(event)">
+        <div class="detail_card" id="detail_card"></div>
+      </dialog>
 
     <!-- Loading Spinner -->
     <div id="loading_spinner" class="loading_spinner">
