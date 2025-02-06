@@ -5,7 +5,8 @@ body {
     "Arial Narrow Bold", sans-serif;
 }
 
-h3, p {
+h3,
+p {
   margin: 0;
 }
 
@@ -24,6 +25,10 @@ button {
 
 button:hover {
   scale: 1.03;
+}
+
+.btn {
+  width: 24px;
 }
 
 .d_none {
@@ -52,7 +57,7 @@ header {
   gap: 12px;
 }
 
-.header_logo>img {
+.header_logo > img {
   height: 50px;
 }
 
@@ -95,7 +100,6 @@ main {
 .pokemon_info {
   display: flex;
   flex-direction: column;
-  /* gap: 12px; */
 }
 
 .pokemon_type {
@@ -109,7 +113,8 @@ main {
   margin-bottom: 12px;
 }
 
-.pokemon_id, .pokemon_type {
+.pokemon_id,
+.pokemon_type {
   color: rgb(63, 62, 62);
 }
 
@@ -125,6 +130,7 @@ main {
 
 .pokemon_image {
   z-index: 1;
+  filter: drop-shadow(2px 4px 6px black);
 }
 
 .bg_grass {
@@ -218,11 +224,56 @@ dialog:focus-visible {
 }
 
 .detail_card {
+  background-color: #49d0b0;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  align-items: center;
+}
+
+.img_control {
+  width: calc(100% - 32px);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.detail_card_infos_container {
+  width: calc(100% - 32px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail_card_pokemon_image {
+  width: 160px;
+  z-index: 5;
+  margin-bottom: -20px;
+}
+
+.detail_card_details_container {
+  background-color: white;
+  width: 100%;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.details_slider {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 16px;
+}
+
+.detail_card_details {
+  display: flex;
+  flex-grow: 1;
+  border: 1px solid grey;
+  padding: 24px 16px;
 }
 
 /* Loadingspinner */

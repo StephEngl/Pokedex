@@ -8,7 +8,7 @@ function init() {
 }
 
 async function renderPokemonCards(start, end) {
-  showSpinner();
+  // showSpinner();
   if (pokemon.length < end) {
     const newPokemon = await fetchPokemon(start, end - start);
     pokemon.push(...newPokemon);
@@ -17,7 +17,7 @@ async function renderPokemonCards(start, end) {
   addNewPokemonCards(start, end-start);
   await updatePokemonDetails(start, end-start);
 
-  hideSpinner();
+  // hideSpinner();
   if (start > 0) {
     scrollToNewCards(start);
   }

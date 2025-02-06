@@ -33,8 +33,32 @@
       </div>
       <button onclick="loadMorePokemon()">Weitere anzeigen...</button>
 
+      <!-- DetailCards -->
       <dialog id="overlay" onmousedown="onMouseDown(event)">
-        <div class="detail_card" id="detail_card"></div>
+        <div class="detail_card" id="detail_card">
+          <div class="img_control">
+            <div onclick="previousImage(currIndex)" id="btnLeft"><img class="btn" src="./assets/icons/arrow_prev.svg" alt="Pfeil nach links"></div>
+            <div onclick="nextImage(currIndex)" id="btnRight"><img class="btn" src="./assets/icons/arrow_next.svg" alt="Pfeil nach rechts"></div>
+          </div>
+          <div class="detail_card_infos_container">
+            <div class="detail_card_infos">
+              <h3>Bisasam</h3>
+              <div id="detail_card_types">Pflanze</div>
+            </div>
+            <div id="detail_card_pokemon_id">#0001</div>
+          </div>
+          <img src="assets/img/pokemon_open.png" alt="" class="detail_card_pokemon_image">
+          <!-- Detail Container -->
+          <div class="detail_card_details_container">
+            <div class="details_slider">
+              <p>Infos</p>
+              <p>Statuswerte</p>
+              <p>Entwicklung</p>
+              <p>Formen</p>
+            </div>
+            <div class="detail_card_details" id="detail_card_details"></div>
+          </div>
+        </div>
       </dialog>
 
     <!-- Loading Spinner -->
