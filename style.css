@@ -61,6 +61,25 @@ header {
   height: 50px;
 }
 
+input {
+  border: 2px solid #49d0b0;
+  border-radius: 16px;
+  padding: 12px 24px;
+  font-size: 16px;
+  color: #333333;
+  width: 250px;
+}
+
+input::placeholder {
+  color: #999999;
+}
+
+input:focus {
+  outline: none;
+  border-color: #3aa18f;
+  box-shadow: 0 0 0 3px rgba(73, 208, 176, 0.3);
+}
+
 /* Main Section */
 
 main {
@@ -70,6 +89,7 @@ main {
   align-items: center;
   gap: 36px;
 }
+
 .cards_wrapper {
   max-width: 1440px;
   display: flex;
@@ -150,7 +170,7 @@ main {
 }
 
 .bg_normal {
-  background-color: #a8a77a;
+  background-color: #b6b58f;
 }
 
 .bg_ice {
