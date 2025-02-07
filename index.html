@@ -28,7 +28,7 @@
             <img src="assets/img/pokemon_spinner.png" alt="Loading...">
           </div>
         </div>
-        <input onchange="searchPokemon()" id="search_input" type="text" placeholder="Pokémon suchen...">
+        <input oninput="searchPokemon()" id="search_input" type="text" placeholder="Pokémon suchen...">
       </div>
     </header>
 
@@ -47,12 +47,12 @@
           </div>
           <div class="detail_card_infos_container">
             <div class="detail_card_infos">
-              <h3>Bisasam</h3>
+              <h3 id="detail_card_name">Bisasam</h3>
               <div id="detail_card_types">Pflanze</div>
             </div>
             <div id="detail_card_pokemon_id">#0001</div>
           </div>
-          <img src="assets/img/pokemon_open.png" alt="" class="detail_card_pokemon_image">
+          <img src="assets/img/pokemon_open.png" alt="" class="detail_card_pokemon_image" id="detail_card_pokemon_image">
           <!-- Detail Container -->
           <div class="detail_card_details_container">
             <div class="details_slider">
@@ -66,25 +66,9 @@
         </div>
       </dialog>
 
-    <!-- Loading Spinner -->
-    <!-- <div id="loading_spinner" class="loading_spinner">
-    <img src="./assets/img/pokemon_spinner.png" alt="Loading..." />
-    </div> -->
     </main>
 
     <!-- Footer Section -->
     <footer></footer>
   </body>
 </html>
-
-<!-- <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-  <defs>
-    <mask id="pokeball-mask">
-      <rect width="200" height="200" fill="white"/>
-      <circle cx="100" cy="100" r="40" fill="black"/>
-      <rect x="0" y="92.5" width="200" height="15" fill="black"/>
-    </mask>
-  </defs>
-  <circle cx="100" cy="100" r="100" fill="rgba(186, 22, 39, 0.7)" mask="url(#pokeball-mask)"/>
-  <circle cx="100" cy="100" r="25" fill="rgba(255,255,255,0.7)"/>
-</svg> -->

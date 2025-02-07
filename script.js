@@ -4,7 +4,7 @@ let pokemonDetails = [];
 let cardsWrapper = document.getElementById("cards_wrapper");
 let currentOffset = 0;
 const limitLoadingPokemon = 20;
-let currIndex = 1;
+let currIndex = 0;
 
 async function init() {
   await getAllPokemonNames();
@@ -46,7 +46,8 @@ async function renderPokemonCards(start, end) {
 
 function createPokemonCard(i, pokemonDetails) {
   const card = document.createElement("div");
-  card.onclick = openDetailCard;
+  card.setAttribute('onclick', `openDetailCard(${i})`);
+  // card.onclick = `openDetailCard(${i})`;
   card.className = `cards_content bg_${pokemonDetails.types[0].type.name}`;
   card.id = `cards_content_${i}`;
 
@@ -63,6 +64,15 @@ function createPokemonCard(i, pokemonDetails) {
   );
 
   return card;
+}
+
+function renderDetailCard(currIndex) {
+  document.getElementById("detail_card_pokemon_id").innerHTML =
+    document.getElementById("pokemon_id_" + [currIndex]).innerHTML;
+  document.getElementById("detail_card_name").innerHTML =
+    document.getElementById("pokemon_name_" + [currIndex]).innerHTML;
+  document.getElementById("detail_card_types").innerHTML = getTypesTemplate(pokemonDetails.types);
+  document.getElementById("detail_card_pokemon_image").src = document.getElementById("pokemon_image_" + [currIndex]).src;
 }
 
 function loadImage(src) {
@@ -128,13 +138,15 @@ async function getPokemonDetails(i, pokemonUrl) {
 }
 
 // Show Dialog -> DetailCard
-function openDetailCard() {
+function openDetailCard(currIndex) {
+  document.body.classList.add("overflow_hidden");
   let refOverlay = document.getElementById("overlay");
   refOverlay.showModal();
-  // showImage(currIndex);
+  renderDetailCard(currIndex);
 }
 
 function onMouseDown(event) {
+  document.body.classList.remove("overflow_hidden");
   const dialog = document.getElementById("overlay");
   if (event.target === dialog) {
     dialog.close();
