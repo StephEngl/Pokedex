@@ -23,12 +23,20 @@ async function renderPokemonCards(start, end) {
       const newPokemon = await fetchPokemon(start, end - start);
       pokemon.push(...newPokemon);
     }
-  
+    const imageLoadPromises = [];
+
     for (let i = start; i < end; i++) {
       pokemonDetails = await getPokemonDetails(i, pokemon[i].url);
       const card = createPokemonCard(i, pokemonDetails);
       cardsWrapper.appendChild(card);
+
+      const imgElement = card.querySelector("img");
+      if (imgElement) {
+        imageLoadPromises.push(loadImage(imgElement.src));
+      }
     }
+    // Warten, bis alle Bilder geladen sind
+    await Promise.all(imageLoadPromises);
   } catch (error) {
     console.error("Error rendering Pokemon cards:", error);
   } finally {
@@ -37,26 +45,33 @@ async function renderPokemonCards(start, end) {
 }
 
 function createPokemonCard(i, pokemonDetails) {
-  const card = document.createElement('div');
+  const card = document.createElement("div");
   card.onclick = openDetailCard;
   card.className = `cards_content bg_${pokemonDetails.types[0].type.name}`;
   card.id = `cards_content_${i}`;
 
   const pokemonId = ("000" + pokemonDetails.id).slice(-4);
   const pokemonName = pokemonDetails.name;
-  const pokemonImage = pokemonDetails.sprites.other.dream_world.front_default;
+  const pokemonImage = pokemonDetails.sprites.other.home.front_default;
 
-  card.innerHTML = `
-    <div class="pokemon_info" id="pokemon_info_${i}">
-      <p class="pokemon_id" id="pokemon_id_${i}">#${pokemonId}</p>
-      <h3 id="pokemon_name_${i}">${pokemonName}</h3>
-      ${pokemonDetails.types.map((type, j) => `<p class="pokemon_type" id="type_${j}">${type.type.name}</p>`).join('')}
-    </div>
-    <img src="assets/img/pokeball.svg" alt="Pokeball" class="pokeball-background">
-    <img src="${pokemonImage}" alt="${pokemonName}" class="pokemon_image" id="pokemon_image_${i}">
-  `;
+  card.innerHTML = getPokemonCardTemplate(
+    i,
+    pokemonId,
+    pokemonName,
+    pokemonImage,
+    pokemonDetails.types
+  );
 
   return card;
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
 }
 
 function loadMorePokemon() {
@@ -86,11 +101,11 @@ function searchPokemon() {
   const input = document.getElementById("search_input").value.toLowerCase();
 
   if (2 >= input.length) {
-    cardsWrapper.innerHTML = ""; 
+    cardsWrapper.innerHTML = "";
     renderPokemonCards(0, limitLoadingPokemon);
     return;
   }
-  const filteredPokemon = allPokemonNames.filter(name => 
+  const filteredPokemon = allPokemonNames.filter((name) =>
     name.toLowerCase().includes(input)
   );
   renderFilteredPokemonCards(filteredPokemon);
@@ -101,7 +116,7 @@ async function renderFilteredPokemonCards(filteredPokemon) {
   for (let i = 0; i < filteredPokemon.length; i++) {
     const pokemonName = filteredPokemon[i];
     const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
-    pokemonDetails = await getPokemonDetails(i, pokemonUrl)
+    pokemonDetails = await getPokemonDetails(i, pokemonUrl);
     const card = createPokemonCard(i, pokemonDetails);
     cardsWrapper.appendChild(card);
   }
