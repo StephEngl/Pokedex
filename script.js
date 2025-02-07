@@ -1,5 +1,6 @@
 let pokemon = [];
 let allPokemonNames = [];
+let pokemonCache = [];
 let pokemonDetails = [];
 let cardsWrapper = document.getElementById("cards_wrapper");
 let currentOffset = 0;
@@ -37,6 +38,7 @@ async function renderPokemonCards(start, end) {
     }
     // Warten, bis alle Bilder geladen sind
     await Promise.all(imageLoadPromises);
+    pokemonCache = cardsWrapper.innerHTML;
   } catch (error) {
     console.error("Error rendering Pokemon cards:", error);
   } finally {
@@ -46,8 +48,7 @@ async function renderPokemonCards(start, end) {
 
 function createPokemonCard(i, pokemonDetails) {
   const card = document.createElement("div");
-  card.setAttribute('onclick', `openDetailCard(${i})`);
-  // card.onclick = `openDetailCard(${i})`;
+  card.setAttribute("onclick", `openDetailCard(${i})`);
   card.className = `cards_content bg_${pokemonDetails.types[0].type.name}`;
   card.id = `cards_content_${i}`;
 
@@ -67,12 +68,44 @@ function createPokemonCard(i, pokemonDetails) {
 }
 
 function renderDetailCard(currIndex) {
+  document
+    .getElementById("btn_left")
+    .setAttribute("onclick", `previousImage(${currIndex})`);
+  document
+    .getElementById("btn_right")
+    .setAttribute("onclick", `nextImage(${currIndex})`);
+  document
+    .getElementById("detail_card")
+    .className = `detail_card bg_${pokemonDetails.types[0].type.name}`;
+
   document.getElementById("detail_card_pokemon_id").innerHTML =
     document.getElementById("pokemon_id_" + [currIndex]).innerHTML;
   document.getElementById("detail_card_name").innerHTML =
     document.getElementById("pokemon_name_" + [currIndex]).innerHTML;
-  document.getElementById("detail_card_types").innerHTML = getTypesTemplate(pokemonDetails.types);
-  document.getElementById("detail_card_pokemon_image").src = document.getElementById("pokemon_image_" + [currIndex]).src;
+  document.getElementById("detail_card_types").innerHTML = getTypesTemplate(
+    pokemonDetails.types
+  );
+  document.getElementById("detail_card_pokemon_image").src =
+    document.getElementById("pokemon_image_" + [currIndex]).src;
+}
+
+// Navigate in Detail Card
+function previousImage(currIndex) {
+  if (currIndex <= 0) {
+    currIndex = pokemon.length - 1;
+  } else {
+    currIndex -= 1;
+  }
+  renderDetailCard(currIndex);
+}
+
+function nextImage(currIndex) {
+  if (currIndex >= pokemon.length - 1) {
+    currIndex = 0;
+  } else {
+    currIndex += 1;
+  }
+  renderDetailCard(currIndex);
 }
 
 function loadImage(src) {
@@ -109,10 +142,8 @@ async function fetchPokemonDetails(i, url) {
 // Pokemon Names Search Field
 function searchPokemon() {
   const input = document.getElementById("search_input").value.toLowerCase();
-
   if (2 >= input.length) {
-    cardsWrapper.innerHTML = "";
-    renderPokemonCards(0, limitLoadingPokemon);
+    cardsWrapper.innerHTML = pokemonCache;
     return;
   }
   const filteredPokemon = allPokemonNames.filter((name) =>
@@ -146,9 +177,9 @@ function openDetailCard(currIndex) {
 }
 
 function onMouseDown(event) {
-  document.body.classList.remove("overflow_hidden");
   const dialog = document.getElementById("overlay");
   if (event.target === dialog) {
+    document.body.classList.remove("overflow_hidden");
     dialog.close();
   }
 }
