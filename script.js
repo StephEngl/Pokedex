@@ -3,7 +3,7 @@ let allPokemonNames = [];
 let pokemonDetails = [];
 let cardsWrapper = document.getElementById("cards_wrapper");
 let currentOffset = 0;
-const limitLoadingPokemon = 650;
+const limitLoadingPokemon = 20;
 let currIndex = 1;
 
 async function init() {
@@ -17,18 +17,23 @@ async function getAllPokemonNames() {
 }
 
 async function renderPokemonCards(start, end) {
-  // showSpinner();
-  if (pokemon.length < end) {
-    const newPokemon = await fetchPokemon(start, end - start);
-    pokemon.push(...newPokemon);
+  showSpinner();
+  try {
+    if (pokemon.length < end) {
+      const newPokemon = await fetchPokemon(start, end - start);
+      pokemon.push(...newPokemon);
+    }
+  
+    for (let i = start; i < end; i++) {
+      pokemonDetails = await getPokemonDetails(i, pokemon[i].url);
+      const card = createPokemonCard(i, pokemonDetails);
+      cardsWrapper.appendChild(card);
+    }
+  } catch (error) {
+    console.error("Error rendering Pokemon cards:", error);
+  } finally {
+    hideSpinner();
   }
-
-  for (let i = start; i < end; i++) {
-    pokemonDetails = await getPokemonDetails(i, pokemon[i].url);
-    const card = createPokemonCard(i, pokemonDetails);
-    cardsWrapper.appendChild(card);
-  }
-  // hideSpinner();
 }
 
 function createPokemonCard(i, pokemonDetails) {
@@ -145,12 +150,11 @@ function translateType(englishType) {
   return typeTranslations[englishType] || englishType;
 }
 
+// Loading Spinner
 function showSpinner() {
-  document.getElementById("cards_wrapper").style.display = "none";
-  document.getElementById("loading_spinner").style.display = "flex";
+  document.getElementById("loading_spinner_overlay").style.display = "flex";
 }
 
 function hideSpinner() {
-  document.getElementById("loading_spinner").style.display = "none";
-  document.getElementById("cards_wrapper").style.display = "flex";
+  document.getElementById("loading_spinner_overlay").style.display = "none";
 }

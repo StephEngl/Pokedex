@@ -23,6 +23,11 @@
           <img src="assets/icons/pokeball.png" alt="Pokéball Logo">
           <h1>Pokédex</h1>
         </div>
+        <div id="loading_spinner_overlay" class="loading_spinner_overlay">
+          <div class="loading_spinner">
+            <img src="assets/img/pokemon_spinner.png" alt="Loading...">
+          </div>
+        </div>
         <input oninput="searchPokemon()" id="search_input" type="text" placeholder="Pokémon suchen...">
       </div>
     </header>
@@ -62,12 +67,24 @@
       </dialog>
 
     <!-- Loading Spinner -->
-    <div id="loading_spinner" class="loading_spinner">
+    <!-- <div id="loading_spinner" class="loading_spinner">
     <img src="./assets/img/pokemon_spinner.png" alt="Loading..." />
-    </div>
+    </div> -->
     </main>
 
     <!-- Footer Section -->
     <footer></footer>
   </body>
 </html>
+
+<!-- <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <mask id="pokeball-mask">
+      <rect width="200" height="200" fill="white"/>
+      <circle cx="100" cy="100" r="40" fill="black"/>
+      <rect x="0" y="92.5" width="200" height="15" fill="black"/>
+    </mask>
+  </defs>
+  <circle cx="100" cy="100" r="100" fill="rgba(186, 22, 39, 0.7)" mask="url(#pokeball-mask)"/>
+  <circle cx="100" cy="100" r="25" fill="rgba(255,255,255,0.7)"/>
+</svg> -->
