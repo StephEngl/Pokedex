@@ -254,6 +254,7 @@ dialog:focus-visible {
 .detail_card {
   width: 100%;
   height: 100%;
+  text-transform: capitalize;
   display: flex;
   flex-direction: column;
   align-items: center;

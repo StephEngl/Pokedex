@@ -28,7 +28,7 @@ async function renderPokemonCards(start, end) {
 
     for (let i = start; i < end; i++) {
       pokemonDetails = await getPokemonDetails(i, pokemon[i].url);
-      const card = createPokemonCard(i, pokemonDetails);
+      const card = createPokemonCard(i, pokemonDetails, pokemon[i].url);
       cardsWrapper.appendChild(card);
 
       const imgElement = card.querySelector("img");
@@ -46,9 +46,9 @@ async function renderPokemonCards(start, end) {
   }
 }
 
-function createPokemonCard(i, pokemonDetails) {
+function createPokemonCard(i, pokemonDetails, pokemonUrl) {
   const card = document.createElement("div");
-  card.setAttribute("onclick", `openDetailCard(${i})`);
+  card.setAttribute("onclick", `openDetailCard(${i}, "${pokemonUrl}")`);
   card.className = `cards_content bg_${pokemonDetails.types[0].type.name}`;
   card.id = `cards_content_${i}`;
 
@@ -67,45 +67,61 @@ function createPokemonCard(i, pokemonDetails) {
   return card;
 }
 
-function renderDetailCard(currIndex) {
+// Show Dialog -> DetailCard
+function openDetailCard(currIndex, pokemonUrl) {
+  document.body.classList.add("overflow_hidden");
+  let refOverlay = document.getElementById("overlay");
+  refOverlay.showModal();
+  renderDetailCard(currIndex, pokemonUrl);
+}
+
+function onMouseDown(event) {
+  const dialog = document.getElementById("overlay");
+  if (event.target === dialog) {
+    document.body.classList.remove("overflow_hidden");
+    dialog.close();
+  }
+}
+
+async function renderDetailCard(currIndex, pokemonUrl) {
+  let pokemonDetail = await fetchPokemonDetails(pokemonUrl)
   document
     .getElementById("btn_left")
-    .setAttribute("onclick", `previousImage(${currIndex})`);
+    .setAttribute("onclick", `getPreviousDetailCard(${currIndex}, "${pokemonUrl}")`);
   document
     .getElementById("btn_right")
-    .setAttribute("onclick", `nextImage(${currIndex})`);
+    .setAttribute("onclick", `getNextDetailCard(${currIndex}, "${pokemonUrl}")`);
   document
     .getElementById("detail_card")
-    .className = `detail_card bg_${pokemonDetails.types[0].type.name}`;
+    .className = `detail_card bg_${pokemonDetail.types[0].type.name}`;
 
   document.getElementById("detail_card_pokemon_id").innerHTML =
     document.getElementById("pokemon_id_" + [currIndex]).innerHTML;
   document.getElementById("detail_card_name").innerHTML =
     document.getElementById("pokemon_name_" + [currIndex]).innerHTML;
   document.getElementById("detail_card_types").innerHTML = getTypesTemplate(
-    pokemonDetails.types
-  );
+    pokemonDetail.types);
   document.getElementById("detail_card_pokemon_image").src =
     document.getElementById("pokemon_image_" + [currIndex]).src;
 }
 
 // Navigate in Detail Card
-function previousImage(currIndex) {
+function getPreviousDetailCard(currIndex, pokemonUrl) {
   if (currIndex <= 0) {
     currIndex = pokemon.length - 1;
   } else {
     currIndex -= 1;
   }
-  renderDetailCard(currIndex);
+  renderDetailCard(currIndex, pokemonUrl);
 }
 
-function nextImage(currIndex) {
+function getNextDetailCard(currIndex, pokemonUrl) {
   if (currIndex >= pokemon.length - 1) {
     currIndex = 0;
   } else {
     currIndex += 1;
   }
-  renderDetailCard(currIndex);
+  renderDetailCard(currIndex, pokemonUrl);
 }
 
 function loadImage(src) {
@@ -134,7 +150,7 @@ async function fetchPokemon(offset, limit) {
   }
 }
 
-async function fetchPokemonDetails(i, url) {
+async function fetchPokemonDetails(url) {
   const response = await fetch(url);
   return await response.json();
 }
@@ -164,24 +180,8 @@ async function renderFilteredPokemonCards(filteredPokemon) {
 }
 
 async function getPokemonDetails(i, pokemonUrl) {
-  pokemonDetails = await fetchPokemonDetails(i, pokemonUrl);
+  pokemonDetails = await fetchPokemonDetails(pokemonUrl);
   return pokemonDetails;
-}
-
-// Show Dialog -> DetailCard
-function openDetailCard(currIndex) {
-  document.body.classList.add("overflow_hidden");
-  let refOverlay = document.getElementById("overlay");
-  refOverlay.showModal();
-  renderDetailCard(currIndex);
-}
-
-function onMouseDown(event) {
-  const dialog = document.getElementById("overlay");
-  if (event.target === dialog) {
-    document.body.classList.remove("overflow_hidden");
-    dialog.close();
-  }
 }
 
 function translateType(englishType) {
