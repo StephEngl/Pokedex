@@ -114,6 +114,9 @@ async function renderDetailCard(currIndex, pokemonUrl) {
     document.getElementById("pokemon_region").textContent = regionName;
     // Typen für die chartfarbe setzen
     const pokemonType = pokemonDetail.types[0].type.name;
+    document.getElementById(
+      "detail_card"
+    ).className = `detail_card bg_${pokemonType}`;
     getStatsFromAPI(pokemonType, pokemonDetail);
 
     document
@@ -128,9 +131,6 @@ async function renderDetailCard(currIndex, pokemonUrl) {
         "onclick",
         `getNextDetailCard(${currIndex}, "${pokemonUrl}")`
       );
-    document.getElementById(
-      "detail_card"
-    ).className = `detail_card bg_${pokemonType}`;
 
     document.getElementById("detail_card_pokemon_id").innerHTML =
       document.getElementById("pokemon_id_" + [currIndex]).innerHTML;
@@ -139,12 +139,9 @@ async function renderDetailCard(currIndex, pokemonUrl) {
     document.getElementById("detail_card_types").innerHTML = getTypesTemplate(
       pokemonDetail.types
     );
-    // Height and weight
     getHeightAndWeightFromApi(pokemonDetail);
+    setDetailCardImage(currIndex);
     
-    // Image
-    document.getElementById("detail_card_pokemon_image").src =
-      document.getElementById("pokemon_image_" + [currIndex]).src;
     playPokemonCry(pokemonDetail.cries.latest);
     console.log(pokemonDetail.cries.latest);
   } catch (error) {
@@ -177,6 +174,11 @@ function getHeightAndWeightFromApi(pokemonDetail) {
   document.getElementById(
     "pokemon_weight"
   ).textContent = `${weightInKilograms} kg`;
+}
+
+function setDetailCardImage(currIndex) {
+document.getElementById("detail_card_pokemon_image").src =
+document.getElementById("pokemon_image_" + [currIndex]).src;
 }
 
 async function playPokemonCry(audioUrl) {
