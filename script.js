@@ -100,29 +100,17 @@ function onMouseDown(event) {
 async function renderDetailCard(currIndex, pokemonUrl) {
   try {
     let pokemonDetail = await fetchPokemonDetails(pokemonUrl);
-    getGenerationAndRegion(pokemonDetail);
-    // Typen für die chartfarbe und stats setzen
     const pokemonType = pokemonDetail.types[0].type.name;
+    getGenerationAndRegion(pokemonDetail);
     setClassBackgroundColor(pokemonType);
     getStatsFromAPI(pokemonType, pokemonDetail);
-
-    document
-      .getElementById("btn_left")
-      .setAttribute(
-        "onclick",
-        `getPreviousDetailCard(${currIndex}, "${pokemonUrl}")`
-      );
-    document
-      .getElementById("btn_right")
-      .setAttribute(
-        "onclick",
-        `getNextDetailCard(${currIndex}, "${pokemonUrl}")`
-      );
     setPokemonIdAndName(currIndex, pokemonDetail);
     getHeightAndWeightFromApi(pokemonDetail);
     setDetailCardImage(currIndex);
-    playPokemonCry(pokemonDetail.cries.latest);
-  } catch (error) {
+    setButtonAttributes(currIndex, pokemonUrl);
+    const cryButton = document.getElementById("pokemon_cry");
+    cryButton.setAttribute("onclick", `playPokemonCry('${pokemonDetail.cries.latest}')`);
+    } catch (error) {
     console.error("Fehler beim Rendern der Detailkarte:", error);
   }
 }
@@ -194,6 +182,21 @@ async function playPokemonCry(audioUrl) {
   } catch (error) {
     console.error("Fehler beim Abspielen des Pokémon-Schreis:", error);
   }
+}
+
+function setButtonAttributes(currIndex, pokemonUrl) {
+  document
+  .getElementById("btn_left")
+  .setAttribute(
+    "onclick",
+    `getPreviousDetailCard(${currIndex}, "${pokemonUrl}")`
+  );
+document
+  .getElementById("btn_right")
+  .setAttribute(
+    "onclick",
+    `getNextDetailCard(${currIndex}, "${pokemonUrl}")`
+  );
 }
 
 // Navigate in Detail Card

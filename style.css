@@ -283,6 +283,31 @@ dialog:focus-visible {
   filter: drop-shadow(8px 8px 16px rgba(0, 0, 0, 0.7));
 }
 
+#pokemon_cry {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin-right: 16px;
+  width: auto;
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+#pokemon_cry img {
+  width: 36px;
+  height: 36px;
+  display: block; /* Entfernt zusätzlichen Platz unter dem Bild */
+}
+
+#pokemon_cry:hover {
+  transform: scale(1.1);
+}
+
+#pokemon_cry:active {
+  transform: scale(0.95);
+}
+
 .detail_card_details_container {
   background-color: white;
   width: 100%;
