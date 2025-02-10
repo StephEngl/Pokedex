@@ -100,23 +100,10 @@ function onMouseDown(event) {
 async function renderDetailCard(currIndex, pokemonUrl) {
   try {
     let pokemonDetail = await fetchPokemonDetails(pokemonUrl);
-
-    // Abrufen der Pokémon-Spezies-URL (um die Generation zu erhalten)
-    const pokemonSpeciesUrl = pokemonDetail.species.url;
-    const generationName = await fetchPokemonGeneration(pokemonSpeciesUrl);
-    const romanNumber = generationName.replace("generation-", "");
-    const generationNumber = romanToNumber(romanNumber);
-    document.getElementById("pokemon_generation").textContent =
-      generationNumber !== null ? generationNumber : "?";
-    // Get Region
-    const generationUrl = `https://pokeapi.co/api/v2/generation/${generationNumber}/`;
-    const regionName = await fetchPokemonRegionName(generationUrl);
-    document.getElementById("pokemon_region").textContent = regionName;
-    // Typen für die chartfarbe setzen
+    getGenerationAndRegion(pokemonDetail);
+    // Typen für die chartfarbe und stats setzen
     const pokemonType = pokemonDetail.types[0].type.name;
-    document.getElementById(
-      "detail_card"
-    ).className = `detail_card bg_${pokemonType}`;
+    setClassBackgroundColor(pokemonType);
     getStatsFromAPI(pokemonType, pokemonDetail);
 
     document
@@ -131,22 +118,31 @@ async function renderDetailCard(currIndex, pokemonUrl) {
         "onclick",
         `getNextDetailCard(${currIndex}, "${pokemonUrl}")`
       );
-
-    document.getElementById("detail_card_pokemon_id").innerHTML =
-      document.getElementById("pokemon_id_" + [currIndex]).innerHTML;
-    document.getElementById("detail_card_name").innerHTML =
-      document.getElementById("pokemon_name_" + [currIndex]).innerHTML;
-    document.getElementById("detail_card_types").innerHTML = getTypesTemplate(
-      pokemonDetail.types
-    );
+    setPokemonIdAndName(currIndex, pokemonDetail);
     getHeightAndWeightFromApi(pokemonDetail);
     setDetailCardImage(currIndex);
-    
     playPokemonCry(pokemonDetail.cries.latest);
-    console.log(pokemonDetail.cries.latest);
   } catch (error) {
     console.error("Fehler beim Rendern der Detailkarte:", error);
   }
+}
+
+function setClassBackgroundColor(pokemonType) {
+  document.getElementById(
+    "detail_card"
+  ).className = `detail_card bg_${pokemonType}`;
+}
+
+async function getGenerationAndRegion(pokemonDetail) {
+  const pokemonSpeciesUrl = pokemonDetail.species.url;
+  const generationName = await fetchPokemonGeneration(pokemonSpeciesUrl);
+  const romanNumber = generationName.replace("generation-", "");
+  const generationNumber = romanToNumber(romanNumber);
+  document.getElementById("pokemon_generation").textContent =
+    generationNumber !== null ? generationNumber : "?";
+  const generationUrl = `https://pokeapi.co/api/v2/generation/${generationNumber}/`;
+  const regionName = await fetchPokemonRegionName(generationUrl);
+  document.getElementById("pokemon_region").textContent = regionName;
 }
 
 function getStatsFromAPI(pokemonType, pokemonDetail) {
@@ -177,8 +173,18 @@ function getHeightAndWeightFromApi(pokemonDetail) {
 }
 
 function setDetailCardImage(currIndex) {
-document.getElementById("detail_card_pokemon_image").src =
-document.getElementById("pokemon_image_" + [currIndex]).src;
+  document.getElementById("detail_card_pokemon_image").src =
+    document.getElementById("pokemon_image_" + [currIndex]).src;
+}
+
+function setPokemonIdAndName(currIndex, pokemonDetail) {
+  document.getElementById("detail_card_pokemon_id").innerHTML =
+    document.getElementById("pokemon_id_" + [currIndex]).innerHTML;
+  document.getElementById("detail_card_name").innerHTML =
+    document.getElementById("pokemon_name_" + [currIndex]).innerHTML;
+  document.getElementById("detail_card_types").innerHTML = getTypesTemplate(
+    pokemonDetail.types
+  );
 }
 
 async function playPokemonCry(audioUrl) {

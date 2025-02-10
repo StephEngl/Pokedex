@@ -304,7 +304,7 @@ dialog:focus-visible {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
+  padding: 24px 0;
   width: calc(100% - 32px);
 }
 
