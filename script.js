@@ -140,17 +140,8 @@ async function renderDetailCard(currIndex, pokemonUrl) {
       pokemonDetail.types
     );
     // Height and weight
-    const heightInCentimeters = (pokemonDetail.height * 10).toFixed(0);
-    const weightInKilograms = (pokemonDetail.weight / 10)
-      .toFixed(1)
-      .replace(".", ",");
-
-    document.getElementById(
-      "pokemon_height"
-    ).textContent = `${heightInCentimeters} cm`;
-    document.getElementById(
-      "pokemon_weight"
-    ).textContent = `${weightInKilograms} kg`;
+    getHeightAndWeightFromApi(pokemonDetail);
+    
     // Image
     document.getElementById("detail_card_pokemon_image").src =
       document.getElementById("pokemon_image_" + [currIndex]).src;
@@ -172,6 +163,20 @@ function getStatsFromAPI(pokemonType, pokemonDetail) {
     stats["special-defense"],
     stats.speed,
   ]);
+}
+
+function getHeightAndWeightFromApi(pokemonDetail) {
+  const heightInCentimeters = (pokemonDetail.height * 10).toFixed(0);
+  const weightInKilograms = (pokemonDetail.weight / 10)
+    .toFixed(1)
+    .replace(".", ",");
+
+  document.getElementById(
+    "pokemon_height"
+  ).textContent = `${heightInCentimeters} cm`;
+  document.getElementById(
+    "pokemon_weight"
+  ).textContent = `${weightInKilograms} kg`;
 }
 
 async function playPokemonCry(audioUrl) {
