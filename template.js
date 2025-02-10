@@ -10,6 +10,20 @@ function getPokemonCardTemplate(i, pokemonId, pokemonName, pokemonImage, types) 
     `;
   }
   
+
   function getTypesTemplate(types) {
-    return types.map((type, j) => `<p class="pokemon_type" id="type_${j}">${type.type.name}</p>`).join('');
+    return types
+      .map(
+        (type, j) => `
+          <div class="pokemon_type_container">
+            <img 
+              src="assets/icons/${type.type.name}.svg" 
+              alt="${type.type.name}" 
+              class="pokemon_type_icon"
+            />
+            <p class="pokemon_type" id="type_${j}">${type.type.name}</p>
+          </div>
+        `
+      )
+      .join('');
   }

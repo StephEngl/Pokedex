@@ -1,21 +1,25 @@
 let pokemon = [];
-let allPokemonNames = [];
+let searchTimeout;
+// let allPokemonNames = [];
+let renderedPokemonStats = [];
 let pokemonCache = [];
 let pokemonDetails = [];
 let cardsWrapper = document.getElementById("cards_wrapper");
 let currentOffset = 0;
 const limitLoadingPokemon = 20;
 let currIndex = 0;
+let myChart = null;
+const ctx = document.getElementById("myChart");
 
 async function init() {
-  await getAllPokemonNames();
+  // await getAllPokemonNames();
   renderPokemonCards(0, limitLoadingPokemon);
 }
 
-async function getAllPokemonNames() {
-  let pokemonNamesArray = await fetchPokemon(0, 1025);
-  allPokemonNames = pokemonNamesArray.map((pokemon) => pokemon.name);
-}
+// async function getAllPokemonNames() {
+//   let pokemonNamesArray = await fetchPokemon(0, 1025);
+//   allPokemonNames = pokemonNamesArray.map((pokemon) => pokemon.name);
+// }
 
 async function renderPokemonCards(start, end) {
   showSpinner();
@@ -28,6 +32,14 @@ async function renderPokemonCards(start, end) {
 
     for (let i = start; i < end; i++) {
       pokemonDetails = await getPokemonDetails(i, pokemon[i].url);
+      // Pokemon Stats ziehen
+      const stats = extractStats(pokemonDetails);
+      renderedPokemonStats.push({
+        id: i + 1, // Pokémon-ID (API beginnt bei 1)
+        name: pokemonDetails.name,
+        stats: stats
+      });
+      // Pokemon Karte erstellen
       const card = createPokemonCard(i, pokemonDetails, pokemon[i].url);
       cardsWrapper.appendChild(card);
 
@@ -39,6 +51,8 @@ async function renderPokemonCards(start, end) {
     // Warten, bis alle Bilder geladen sind
     await Promise.all(imageLoadPromises);
     pokemonCache = cardsWrapper.innerHTML;
+
+    console.log("Aktuelle gerenderte Stats:", renderedPokemonStats); 
   } catch (error) {
     console.error("Error rendering Pokemon cards:", error);
   } finally {
@@ -84,25 +98,75 @@ function onMouseDown(event) {
 }
 
 async function renderDetailCard(currIndex, pokemonUrl) {
-  let pokemonDetail = await fetchPokemonDetails(pokemonUrl)
+  try {
+    let pokemonDetail = await fetchPokemonDetails(pokemonUrl);
+  
+  // Abrufen der Pokémon-Spezies-URL (um die Generation zu erhalten)
+  const pokemonSpeciesUrl = pokemonDetail.species.url;
+  const generationName = await fetchPokemonGeneration(pokemonSpeciesUrl);
+  const romanNumber = generationName.replace("generation-", "");
+  const generationNumber = romanToNumber(romanNumber);
+  document.getElementById("pokemon_generation").textContent =
+    generationNumber !== null ? generationNumber : "?";
+  // Get Region
+  const generationUrl = `https://pokeapi.co/api/v2/generation/${generationNumber}/`;
+  const regionName = await fetchPokemonRegionName(generationUrl);
+  document.getElementById("pokemon_region").textContent = regionName;
+  // Typen für die chartfarbe setzen
+  const pokemonType = pokemonDetail.types[0].type.name;
+  // Stats
+  const stats = extractStats(pokemonDetail);
+
+  createRadarChart(pokemonType, [
+    stats.hp,
+    stats.attack,
+    stats.defense,
+    stats["special-attack"],
+    stats["special-defense"],
+    stats.speed,
+  ]);
+
   document
     .getElementById("btn_left")
-    .setAttribute("onclick", `getPreviousDetailCard(${currIndex}, "${pokemonUrl}")`);
+    .setAttribute(
+      "onclick",
+      `getPreviousDetailCard(${currIndex}, "${pokemonUrl}")`
+    );
   document
     .getElementById("btn_right")
-    .setAttribute("onclick", `getNextDetailCard(${currIndex}, "${pokemonUrl}")`);
-  document
-    .getElementById("detail_card")
-    .className = `detail_card bg_${pokemonDetail.types[0].type.name}`;
+    .setAttribute(
+      "onclick",
+      `getNextDetailCard(${currIndex}, "${pokemonUrl}")`
+    );
+  document.getElementById(
+    "detail_card"
+  ).className = `detail_card bg_${pokemonType}`;
 
   document.getElementById("detail_card_pokemon_id").innerHTML =
     document.getElementById("pokemon_id_" + [currIndex]).innerHTML;
   document.getElementById("detail_card_name").innerHTML =
     document.getElementById("pokemon_name_" + [currIndex]).innerHTML;
   document.getElementById("detail_card_types").innerHTML = getTypesTemplate(
-    pokemonDetail.types);
+    pokemonDetail.types
+  );
+  // Height and weight
+  const heightInCentimeters = (pokemonDetail.height * 10)
+    .toFixed(0);
+  const weightInKilograms = (pokemonDetail.weight / 10)
+    .toFixed(1)
+    .replace(".", ",");
+
+  document.getElementById("pokemon_height").textContent = `${heightInCentimeters} cm`;
+  document.getElementById(
+    "pokemon_weight"
+  ).textContent = `${weightInKilograms} kg`;
+  // Image
   document.getElementById("detail_card_pokemon_image").src =
     document.getElementById("pokemon_image_" + [currIndex]).src;
+  } catch (error) {
+    console.error("Fehler beim Rendern der Detailkarte:", error);
+  }
+  
 }
 
 // Navigate in Detail Card
@@ -156,26 +220,43 @@ async function fetchPokemonDetails(url) {
 }
 
 // Pokemon Names Search Field
-function searchPokemon() {
+async function searchPokemon() {
   const input = document.getElementById("search_input").value.toLowerCase();
-  if (2 >= input.length) {
+  clearTimeout(searchTimeout);
+
+  if (input.length < 3) {
     cardsWrapper.innerHTML = pokemonCache;
     return;
   }
-  const filteredPokemon = allPokemonNames.filter((name) =>
-    name.toLowerCase().includes(input)
-  );
-  renderFilteredPokemonCards(filteredPokemon);
+
+  searchTimeout = setTimeout(async () => {
+    try {
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1025`);
+      const data = await response.json();
+      const filteredPokemon = data.results.filter(pokemon => 
+        pokemon.name.toLowerCase().startsWith(input)
+      );
+
+      await renderFilteredPokemonCards(filteredPokemon);
+    } catch (error) {
+      console.error("Fehler bei der Pokémon-Suche:", error);
+    }
+  }, 300); // 300ms Verzögerung
 }
 
 async function renderFilteredPokemonCards(filteredPokemon) {
   cardsWrapper.innerHTML = "";
   for (let i = 0; i < filteredPokemon.length; i++) {
-    const pokemonName = filteredPokemon[i];
-    const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
-    pokemonDetails = await getPokemonDetails(i, pokemonUrl);
-    const card = createPokemonCard(i, pokemonDetails);
-    cardsWrapper.appendChild(card);
+    const pokemonData = filteredPokemon[i];
+    const pokemonUrl = pokemonData.url;
+
+    try {
+      const pokemonDetails = await getPokemonDetails(i, pokemonUrl);
+      const card = createPokemonCard(i, pokemonDetails, pokemonUrl);
+      cardsWrapper.appendChild(card);
+    } catch (error) {
+      console.warn(`Fehler beim Laden der Details für ${pokemonData.name}:`, error);
+    }
   }
 }
 
@@ -215,4 +296,127 @@ function showSpinner() {
 
 function hideSpinner() {
   document.getElementById("loading_spinner_overlay").style.display = "none";
+}
+
+// Set Background Color Type-Badge
+function setBackgroundColor(iconElement, containerElement) {
+  const img = new Image();
+  img.src = iconElement.src;
+  img.onload = function () {
+    const canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    const pixelData = ctx.getImageData(0, 0, 1, 1).data;
+    const backgroundColor = `rgba(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]}, 0.3)`;
+    containerElement.style.backgroundColor = backgroundColor;
+  };
+}
+
+// Get Generation
+async function fetchPokemonGeneration(pokemonSpeciesUrl) {
+  const response = await fetch(pokemonSpeciesUrl);
+  const data = await response.json();
+  return data.generation.name; // Gibt z.B. "generation-i" zurück
+}
+
+function romanToNumber(roman) {
+  switch (roman) {
+    case "i":
+      return 1;
+    case "ii":
+      return 2;
+    case "iii":
+      return 3;
+    case "iv":
+      return 4;
+    case "v":
+      return 5;
+    case "vi":
+      return 6;
+    case "vii":
+      return 7;
+    case "viii":
+      return 8;
+    case "ix":
+      return 9;
+    default:
+      return null; // Oder eine andere Fehlerbehandlung
+  }
+}
+
+// Get Region
+async function fetchPokemonRegionName(generationUrl) {
+  const response = await fetch(generationUrl);
+  const data = await response.json();
+  return data.main_region.name;
+}
+
+// Radar Chart for stats
+// Registriere das benutzerdefinierte Plugin
+Chart.register({
+  id: "customBackgroundPlugin",
+  beforeDraw(chart) {
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.fillStyle = "rgba(255,255,255,0.5)"; // Hintergrundfarbe (z.B. halbtransparentes Weiß)
+    ctx.fillRect(0, 0, chart.width, chart.height); // Füllt den gesamten Canvas-Bereich
+    ctx.restore();
+  },
+});
+
+function createRadarChart(pokemonType, statValues) {
+  const ctx = document.getElementById('myChart').getContext('2d');
+
+  // Bestehendes Chart zerstören, falls vorhanden
+  if (myChart) {
+    myChart.destroy();
+  }
+  // Bestimme die Hintergrundfarbe basierend auf dem Pokémon-Typ
+  const backgroundColor = getComputedStyle(document.querySelector(`.bg_${pokemonType}`)).backgroundColor;
+
+  // Erstelle eine semi-transparente Version der Farbe für das Dataset
+  const rgbaColor = backgroundColor.replace('rgb', 'rgba').replace(')', ', 0.4)');
+
+  // Neues Chart erstellen und in der globalen Variable speichern
+  myChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ['KP', 'ANG', 'VER', 'SP-ANG', 'SP-VER', 'INIT'],
+      datasets: [{
+        label: 'Statuswerte',
+        data: statValues,
+        borderWidth: 1,
+        backgroundColor: rgbaColor,
+        borderColor: backgroundColor,
+        pointBackgroundColor: backgroundColor,
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: backgroundColor
+      }]
+    },
+    options: {
+      plugins: {
+        legend: {
+          display: false // Blendet die Legende aus
+        }
+      },
+      scales: {
+        r: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 20
+          }
+        }
+      }
+    }
+  });
+}
+
+function extractStats(pokemonDetails) {
+  return pokemonDetails.stats.reduce((acc, stat) => {
+    acc[stat.stat.name] = stat.base_stat;
+    return acc;
+  }, {});
 }

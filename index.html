@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pokedex</title>
+    <title>PokéDex</title>
     <link
       rel="shortcut icon"
       href="assets/icons/pokeball.png
@@ -12,47 +12,73 @@
     />
 
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js" defer></script>
     <script src="template.js" defer></script>
+ 
+
+
   </head>
   <body onload="init();">
     <!-- Header Section -->
     <header>
       <div class="header_content">
         <div class="header_logo">
-          <img src="assets/icons/pokeball.png" alt="Pokéball Logo">
-          <h1>Pokédex</h1>
+          <img src="assets/icons/pokedex_icon.png" alt="Pokédex Logo" />
+          <h1>PokéDex</h1>
         </div>
-        <div id="loading_spinner_overlay" class="loading_spinner_overlay">
-          <div class="loading_spinner">
-            <img src="assets/img/pokemon_spinner.png" alt="Loading...">
-          </div>
-        </div>
-        <input oninput="searchPokemon()" id="search_input" type="text" placeholder="Pokémon suchen...">
+        <input
+          oninput="searchPokemon()"
+          id="search_input"
+          type="text"
+          placeholder="Pokémon suchen..."
+        />
       </div>
     </header>
 
     <!-- Main Section -->
     <main>
-      <div class="cards_wrapper" id="cards_wrapper">
+      <!-- Loading Spinner -->
+      <div id="loading_spinner_overlay" class="loading_spinner_overlay">
+        <div class="loading_spinner">
+          <img src="assets/img/pokemon_spinner.png" alt="Loading..." />
+        </div>
       </div>
-      <button onclick="loadMorePokemon()">Weitere anzeigen...</button>
 
       <!-- DetailCards -->
+      <div class="cards_wrapper" id="cards_wrapper"></div>
+      <button onclick="loadMorePokemon()">Weitere anzeigen...</button>
+
       <dialog id="overlay" onmousedown="onMouseDown(event)">
         <div class="detail_card" id="detail_card">
           <div class="img_control">
-            <div onclick="previousImage(currIndex)" id="btn_left"><img class="btn" src="./assets/icons/arrow_prev.svg" alt="Pfeil nach links"></div>
-            <div onclick="nextImage(currIndex)" id="btn_right"><img class="btn" src="./assets/icons/arrow_next.svg" alt="Pfeil nach rechts"></div>
+            <div onclick="previousImage(currIndex)" id="btn_left">
+              <img
+                class="btn"
+                src="./assets/icons/arrow_prev.svg"
+                alt="Pfeil nach links"
+              />
+            </div>
+            <div onclick="nextImage(currIndex)" id="btn_right">
+              <img
+                class="btn"
+                src="./assets/icons/arrow_next.svg"
+                alt="Pfeil nach rechts"
+              />
+            </div>
           </div>
           <div class="detail_card_infos_container">
             <div class="detail_card_infos">
               <h3 id="detail_card_name">Bisasam</h3>
-              <div id="detail_card_types">Pflanze</div>
+              <div id="detail_card_pokemon_id">#0001</div>
             </div>
-            <div id="detail_card_pokemon_id">#0001</div>
           </div>
-          <img src="assets/img/pokemon_open.png" alt="" class="detail_card_pokemon_image" id="detail_card_pokemon_image">
+          <img
+            src="assets/img/pokemon_open.png"
+            alt=""
+            class="detail_card_pokemon_image"
+            id="detail_card_pokemon_image"
+          />
           <!-- Detail Container -->
           <div class="detail_card_details_container">
             <div class="details_slider">
@@ -61,11 +87,37 @@
               <p>Entwicklung</p>
               <p>Formen</p>
             </div>
-            <div class="detail_card_details" id="detail_card_details"></div>
+            <!-- About Section -->
+            <div class="detail_card_details d_none" id="detail_card_details">
+              <div class="detail_card_types" id="detail_card_types">Pflanze</div>
+              <div class="about" id="about">
+                <table class="about_table" id="about_table">
+                    <tr>
+                      <td>Größe</td>
+                      <td id="pokemon_height">2.0m</td>
+                    </tr>
+                    <tr>
+                      <td>Gewicht</td>
+                      <td id="pokemon_weight">10kg</td>
+                    </tr>
+                    <tr>
+                      <td>Generation</td>
+                      <td id="pokemon_generation"></td>
+                    </tr>
+                    <tr>
+                      <td>Region</td>
+                      <td id="pokemon_region"></td>
+                    </tr>
+                </table>
+              </div>
+            </div>
+            <!-- Stats Section -->
+            <div class="detail_card_stats" id="detail_card_stats">
+              <canvas id="myChart"></canvas>
+            </div>
           </div>
         </div>
       </dialog>
-
     </main>
 
     <!-- Footer Section -->
