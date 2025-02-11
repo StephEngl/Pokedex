@@ -24,7 +24,7 @@ async function renderPokemonCards(start, end) {
     const imageLoadPromises = [];
 
     for (let i = start; i < end; i++) {
-      const pokemonDetails = await getPokemonDetails(pokemon[i - 1].url);
+      const pokemonDetails = await getPokemonDetails(pokemon[i].url);
       const pokemonId = i; // Pokémon-ID entspricht dem aktuellen Index in der API
       const stats = extractStats(pokemonDetails);
 
@@ -37,7 +37,7 @@ async function renderPokemonCards(start, end) {
       const card = createPokemonCard(
         pokemonId,
         pokemonDetails,
-        pokemon[i - 1].url
+        pokemon[i].url
       );
       cardsWrapper.appendChild(card);
 
@@ -252,7 +252,7 @@ document.querySelector(".details_slider").addEventListener("click", (event) => {
   if (target.tagName === "P" && target.dataset.target) {
     const sectionId = target.dataset.target;
 
-    // Alle Abschnitte ausblenden
+    // Alle Abschnitte ausblenden, außer den slider
     const sections = document.querySelectorAll(
       ".detail_card_details_container > div:not(.details_slider)"
     );
