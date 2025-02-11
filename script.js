@@ -1,44 +1,44 @@
-let pokemon = [];
-let searchTimeout;
+let searchTimeout = [];
 let pokemonCache = [];
-let pokemonDetails = [];
 let cardsWrapper = document.getElementById("cards_wrapper");
-let currentOffset = 1;
+let currentOffset = 0;
 const limitLoadingPokemon = 20;
-let currIndex = 1;
 let myChart = null;
 const ctx = document.getElementById("myChart");
 
 async function init() {
-  await renderPokemonCards(currentOffset, limitLoadingPokemon + 1);
+  // Registriere das benutzerdefinierte Plugin
+Chart.register({
+  id: "customBackgroundPlugin",
+  beforeDraw(chart) {
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.fillStyle = "rgba(255,255,255,0.5)"; // Hintergrundfarbe (z.B. halbtransparentes Weiß)
+    ctx.fillRect(0, 0, chart.width, chart.height); // Füllt den gesamten Canvas-Bereich
+    ctx.restore();
+  },
+});
+  await renderPokemonCards(0, limitLoadingPokemon);
 }
 
-async function renderPokemonCards(start, end) {
+async function renderPokemonCards(offset, limit) {
   showSpinner();
   try {
-    if (pokemon.length < end) {
-      const newPokemon = await fetchPokemon(start - 1, end - start);
-      pokemon.push(...newPokemon);
-    }
+    const newPokemon = await fetchPokemon(offset, limit);
     const imageLoadPromises = [];
 
-    for (let i = start; i < end; i++) {
-      const pokemonDetails = await getPokemonDetails(pokemon[i - 1].url);
-      const pokemonId = i; // Pokémon-ID entspricht dem aktuellen Index in der API
-      const stats = extractStats(pokemonDetails);
-
-      const card = createPokemonCard(pokemonId, pokemonDetails, pokemon[i -1].url);
-      cardsWrapper.appendChild(card);
-
-      const imgElement = card.querySelector("img");
-      if (imgElement) {
-        imageLoadPromises.push(loadImage(imgElement.src));
-      }
+  for (const pokemon of newPokemon) {
+    const pokemonDetails = await getPokemonDetails(pokemon.url);
+    const card = createPokemonCard(pokemonDetails, pokemon.url);
+    cardsWrapper.appendChild(card);
+    const imgElement = card.querySelector("img");
+    if (imgElement) {
+      imageLoadPromises.push(loadImage(imgElement.src));
     }
+  } 
     // Warten, bis alle Bilder geladen sind
     await Promise.all(imageLoadPromises);
     pokemonCache = cardsWrapper.innerHTML;
-
   } catch (error) {
     console.error("Error rendering Pokemon cards:", error);
   } finally {
@@ -46,8 +46,9 @@ async function renderPokemonCards(start, end) {
   }
 }
 
-function createPokemonCard(pokemonId, pokemonDetails, pokemonUrl) {
+function createPokemonCard(pokemonDetails, pokemonUrl) {
   const card = document.createElement("div");
+  const pokemonId = pokemonDetails.id;
   card.setAttribute("onclick", `openDetailCard(${pokemonId}, "${pokemonUrl}")`);
   card.className = `cards_content bg_${pokemonDetails.types[0].type.name}`;
   card.id = `cards_content_${pokemonId}`;
@@ -264,19 +265,16 @@ document.querySelector(".details_slider").addEventListener("click", (event) => {
 
 function loadMorePokemon() {
   currentOffset += limitLoadingPokemon;
-  renderPokemonCards(currentOffset, currentOffset + limitLoadingPokemon);
+  const limit = currentOffset + limitLoadingPokemon;
+  renderPokemonCards(currentOffset, limit);
 }
 
 async function fetchPokemon(offset, limit) {
-  try {
     const response = await fetch(
       `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`
     );
     const responseAsJson = await response.json();
     return responseAsJson.results;
-  } catch (error) {
-    console.error("Error while loading Pokémon API", error);
-  }
 }
 
 async function fetchPokemonDetails(url) {
@@ -287,7 +285,9 @@ async function fetchPokemonDetails(url) {
 // Pokemon Names Search Field
 async function searchPokemon() {
   const input = document.getElementById("search_input").value.toLowerCase();
-  clearTimeout(searchTimeout);
+  if (searchTimeout) {
+    clearTimeout(searchTimeout);
+  }
 
   if (input.length < 3) {
     cardsWrapper.innerHTML = pokemonCache;
@@ -319,8 +319,7 @@ async function renderFilteredPokemonCards(filteredPokemon) {
 
     try {
       const pokemonDetails = await getPokemonDetails(pokemonUrl);
-      const pokemonId = pokemonDetails.id;
-      const card = createPokemonCard(pokemonId, pokemonDetails, pokemonUrl);
+      const card = createPokemonCard(pokemonDetails, pokemonUrl);
       cardsWrapper.appendChild(card);
     } catch (error) {
       console.warn(
@@ -332,7 +331,7 @@ async function renderFilteredPokemonCards(filteredPokemon) {
 }
 
 async function getPokemonDetails(pokemonUrl) {
-  pokemonDetails = await fetchPokemonDetails(pokemonUrl);
+  const pokemonDetails = await fetchPokemonDetails(pokemonUrl);
   return pokemonDetails;
 }
 
@@ -401,18 +400,6 @@ async function fetchPokemonRegionName(generationUrl) {
 }
 
 // Radar Chart for stats
-// Registriere das benutzerdefinierte Plugin
-Chart.register({
-  id: "customBackgroundPlugin",
-  beforeDraw(chart) {
-    const ctx = chart.ctx;
-    ctx.save();
-    ctx.fillStyle = "rgba(255,255,255,0.5)"; // Hintergrundfarbe (z.B. halbtransparentes Weiß)
-    ctx.fillRect(0, 0, chart.width, chart.height); // Füllt den gesamten Canvas-Bereich
-    ctx.restore();
-  },
-});
-
 function createRadarChart(pokemonType, statValues) {
   const ctx = document.getElementById("myChart").getContext("2d");
 

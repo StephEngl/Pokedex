@@ -305,6 +305,12 @@ dialog:focus-visible {
   filter: drop-shadow(8px 8px 16px rgba(0, 0, 0, 0.7));
 }
 
+#detail_card_pokemon_image_container > p {
+  height: 250px;
+  display: flex;
+  align-items: center;
+}
+
 .pokemon_cry {
   background-color: transparent;
   border: none;
@@ -363,7 +369,7 @@ dialog:focus-visible {
   padding-bottom: 16px;
   border-bottom: 2px solid transparent;
   text-align: center;
-  transition: all 150ms ease; 
+  transition: all 150ms ease;
 }
 
 .details_slider > p:hover,
