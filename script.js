@@ -75,14 +75,14 @@ function createPokemonCard(pokemonId, pokemonDetails, pokemonUrl) {
     pokemonImage,
     pokemonDetails.types
   );
-    // Lade das Bild und wechsle die Klassen
-    const img = card.querySelector(`#pokemon_image_${pokemonId}`);
-    const loadingHint = card.querySelector(`#loading_hint_${pokemonId}`);
-    
-    img.onload = () => {
-      loadingHint.classList.add('d_none');
-      img.classList.remove('d_none');
-    };
+  // Lade das Bild und wechsle die Klassen
+  const img = card.querySelector(`#pokemon_image_${pokemonId}`);
+  const loadingHint = card.querySelector(`#loading_hint_${pokemonId}`);
+
+  img.onload = () => {
+    loadingHint.classList.add("d_none");
+    img.classList.remove("d_none");
+  };
 
   return card;
 }
@@ -243,6 +243,30 @@ function loadImage(src) {
     img.src = src;
   });
 }
+
+// Event Delegation for selection in Detail-Card-Details
+document.querySelector(".details_slider").addEventListener("click", (event) => {
+  const target = event.target;
+
+  // Prüfen, ob ein Tab angeklickt wurde
+  if (target.tagName === "P" && target.dataset.target) {
+    const sectionId = target.dataset.target;
+
+    // Alle Abschnitte ausblenden
+    const sections = document.querySelectorAll(
+      ".detail_card_details_container > div:not(.details_slider)"
+    );
+    sections.forEach((section) => section.classList.add("d_none"));
+
+    // Gewünschten Abschnitt anzeigen
+    document.getElementById(sectionId).classList.remove("d_none");
+
+    // Aktiven Tab hervorheben
+    const tabs = document.querySelectorAll(".details_slider > p");
+    tabs.forEach((tab) => tab.classList.remove("active"));
+    target.classList.add("active");
+  }
+});
 
 function loadMorePokemon() {
   currentOffset += limitLoadingPokemon;

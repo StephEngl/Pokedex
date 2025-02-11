@@ -93,10 +93,10 @@
           <!-- Detail Container -->
           <div class="detail_card_details_container">
             <div class="details_slider">
-              <p>Infos</p>
-              <p>Statuswerte</p>
-              <p>Entwicklung</p>
-              <p>Formen</p>
+              <p data-target="detail_card_details">Infos</p>
+              <p data-target="detail_card_stats" class="active">Statuswerte</p>
+              <p data-target="evolution_chain">Entwicklung</p>
+              <p data-target="shiny_form">Formen</p>
             </div>
             <!-- About Section -->
             <div class="detail_card_details d_none" id="detail_card_details">
@@ -128,6 +128,12 @@
             <div class="detail_card_stats" id="detail_card_stats">
               <canvas id="myChart"></canvas>
             </div>
+            <!-- Evolution Chain -->
+            <div class="evolution_chain d_none" id="evolution_chain"></div>
+            <!-- Forms Section -->
+            <div class="forms_container d_none">
+              <img src="assets/img/pokeball.svg" alt="" id="shiny_form" />
+            </div>
           </div>
         </div>
       </dialog>
@@ -137,8 +143,10 @@
     <footer>
       <div class="footer_content">
         <p>
-          <a href="impressum.html" target="_blank" class="footer_link">Impressum</a> | © 2025
-          Stephanie Englberger
+          <a href="impressum.html" target="_blank" class="footer_link"
+            >Impressum</a
+          >
+          | © 2025 Stephanie Englberger
         </p>
         <p>
           Datenquelle:
