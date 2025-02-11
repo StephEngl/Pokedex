@@ -1,17 +1,16 @@
 let pokemon = [];
 let searchTimeout;
-let renderedPokemonStats = [];
 let pokemonCache = [];
 let pokemonDetails = [];
 let cardsWrapper = document.getElementById("cards_wrapper");
-let currentOffset = 0;
+let currentOffset = 1;
 const limitLoadingPokemon = 20;
 let currIndex = 1;
 let myChart = null;
 const ctx = document.getElementById("myChart");
 
 async function init() {
-  await renderPokemonCards(1, limitLoadingPokemon + 1);
+  await renderPokemonCards(currentOffset, limitLoadingPokemon + 1);
 }
 
 async function renderPokemonCards(start, end) {
@@ -24,21 +23,11 @@ async function renderPokemonCards(start, end) {
     const imageLoadPromises = [];
 
     for (let i = start; i < end; i++) {
-      const pokemonDetails = await getPokemonDetails(pokemon[i].url);
+      const pokemonDetails = await getPokemonDetails(pokemon[i - 1].url);
       const pokemonId = i; // Pokémon-ID entspricht dem aktuellen Index in der API
       const stats = extractStats(pokemonDetails);
 
-      renderedPokemonStats.push({
-        id: pokemonId,
-        name: pokemonDetails.name,
-        stats: stats,
-      });
-
-      const card = createPokemonCard(
-        pokemonId,
-        pokemonDetails,
-        pokemon[i].url
-      );
+      const card = createPokemonCard(pokemonId, pokemonDetails, pokemon[i -1].url);
       cardsWrapper.appendChild(card);
 
       const imgElement = card.querySelector("img");
@@ -50,7 +39,6 @@ async function renderPokemonCards(start, end) {
     await Promise.all(imageLoadPromises);
     pokemonCache = cardsWrapper.innerHTML;
 
-    console.log("Aktuelle gerenderte Stats:", renderedPokemonStats);
   } catch (error) {
     console.error("Error rendering Pokemon cards:", error);
   } finally {
@@ -117,7 +105,8 @@ async function renderDetailCard(pokemonId, pokemonUrl) {
     setDetailCardImage(
       pokemonDetail.sprites.other["official-artwork"].front_default
     );
-    setButtonAttributes(pokemonId);
+    setShinyImage(pokemonDetail.sprites.other["official-artwork"].front_shiny);
+    setButtonAttributes(pokemonDetail.id);
 
     const cryButton = document.getElementById("pokemon_cry");
     cryButton.setAttribute(
@@ -187,6 +176,11 @@ function setDetailCardImage(imageUrl) {
   };
 
   imgElement.src = imageUrl;
+}
+
+function setShinyImage(shinyImageUrl) {
+  const shinyImage = document.getElementById("shiny_image");
+  shinyImage.src = shinyImageUrl;
 }
 
 function setPokemonIdAndName(pokemonDetail) {
