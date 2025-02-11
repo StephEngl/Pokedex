@@ -1,46 +1,44 @@
 let pokemon = [];
 let searchTimeout;
-// let allPokemonNames = [];
 let renderedPokemonStats = [];
 let pokemonCache = [];
 let pokemonDetails = [];
 let cardsWrapper = document.getElementById("cards_wrapper");
 let currentOffset = 0;
 const limitLoadingPokemon = 20;
-let currIndex = 0;
+let currIndex = 1;
 let myChart = null;
 const ctx = document.getElementById("myChart");
 
 async function init() {
-  // await getAllPokemonNames();
-  renderPokemonCards(0, limitLoadingPokemon);
+  await renderPokemonCards(1, limitLoadingPokemon + 1);
 }
-
-// async function getAllPokemonNames() {
-//   let pokemonNamesArray = await fetchPokemon(0, 1025);
-//   allPokemonNames = pokemonNamesArray.map((pokemon) => pokemon.name);
-// }
 
 async function renderPokemonCards(start, end) {
   showSpinner();
   try {
     if (pokemon.length < end) {
-      const newPokemon = await fetchPokemon(start, end - start);
+      const newPokemon = await fetchPokemon(start - 1, end - start);
       pokemon.push(...newPokemon);
     }
     const imageLoadPromises = [];
 
     for (let i = start; i < end; i++) {
-      pokemonDetails = await getPokemonDetails(pokemon[i].url);
-      // Pokemon Stats ziehen
+      const pokemonDetails = await getPokemonDetails(pokemon[i - 1].url);
+      const pokemonId = i; // Pokémon-ID entspricht dem aktuellen Index in der API
       const stats = extractStats(pokemonDetails);
+
       renderedPokemonStats.push({
-        id: i + 1, // Pokémon-ID (API beginnt bei 1)
+        id: pokemonId,
         name: pokemonDetails.name,
         stats: stats,
       });
-      // Pokemon Karte erstellen
-      const card = createPokemonCard(i, pokemonDetails, pokemon[i].url);
+
+      const card = createPokemonCard(
+        pokemonId,
+        pokemonDetails,
+        pokemon[i - 1].url
+      );
       cardsWrapper.appendChild(card);
 
       const imgElement = card.querySelector("img");
@@ -60,33 +58,41 @@ async function renderPokemonCards(start, end) {
   }
 }
 
-function createPokemonCard(i, pokemonDetails, pokemonUrl) {
+function createPokemonCard(pokemonId, pokemonDetails, pokemonUrl) {
   const card = document.createElement("div");
-  card.setAttribute("onclick", `openDetailCard(${i}, "${pokemonUrl}")`);
+  card.setAttribute("onclick", `openDetailCard(${pokemonId}, "${pokemonUrl}")`);
   card.className = `cards_content bg_${pokemonDetails.types[0].type.name}`;
-  card.id = `cards_content_${i}`;
+  card.id = `cards_content_${pokemonId}`;
 
-  const pokemonId = ("000" + pokemonDetails.id).slice(-4);
+  const formattedPokemonId = ("000" + pokemonId).slice(-4);
   const pokemonName = pokemonDetails.name;
   const pokemonImage = pokemonDetails.sprites.other.home.front_default;
 
   card.innerHTML = getPokemonCardTemplate(
-    i,
     pokemonId,
+    formattedPokemonId,
     pokemonName,
     pokemonImage,
     pokemonDetails.types
   );
+    // Lade das Bild und wechsle die Klassen
+    const img = card.querySelector(`#pokemon_image_${pokemonId}`);
+    const loadingHint = card.querySelector(`#loading_hint_${pokemonId}`);
+    
+    img.onload = () => {
+      loadingHint.classList.add('d_none');
+      img.classList.remove('d_none');
+    };
 
   return card;
 }
 
 // Show Dialog -> DetailCard
-function openDetailCard(currIndex, pokemonUrl) {
+function openDetailCard(pokemonId, pokemonUrl) {
   document.body.classList.add("overflow_hidden");
   let refOverlay = document.getElementById("overlay");
   refOverlay.showModal();
-  renderDetailCard(currIndex, pokemonUrl);
+  renderDetailCard(pokemonId, pokemonUrl);
 }
 
 function onMouseDown(event) {
@@ -97,20 +103,28 @@ function onMouseDown(event) {
   }
 }
 
-async function renderDetailCard(currIndex, pokemonUrl) {
+async function renderDetailCard(pokemonId, pokemonUrl) {
   try {
     let pokemonDetail = await fetchPokemonDetails(pokemonUrl);
     const pokemonType = pokemonDetail.types[0].type.name;
-    getGenerationAndRegion(pokemonDetail);
+
     setClassBackgroundColor(pokemonType);
+    await getGenerationAndRegion(pokemonDetail);
     getStatsFromAPI(pokemonType, pokemonDetail);
-    setPokemonIdAndName(currIndex, pokemonDetail);
+    setPokemonIdAndName(pokemonDetail);
     getHeightAndWeightFromApi(pokemonDetail);
-    setDetailCardImage(currIndex);
-    setButtonAttributes(currIndex, pokemonUrl);
+
+    setDetailCardImage(
+      pokemonDetail.sprites.other["official-artwork"].front_default
+    );
+    setButtonAttributes(pokemonId);
+
     const cryButton = document.getElementById("pokemon_cry");
-    cryButton.setAttribute("onclick", `playPokemonCry('${pokemonDetail.cries.latest}')`);
-    } catch (error) {
+    cryButton.setAttribute(
+      "onclick",
+      `playPokemonCry('${pokemonDetail.cries.latest}')`
+    );
+  } catch (error) {
     console.error("Fehler beim Rendern der Detailkarte:", error);
   }
 }
@@ -160,16 +174,27 @@ function getHeightAndWeightFromApi(pokemonDetail) {
   ).textContent = `${weightInKilograms} kg`;
 }
 
-function setDetailCardImage(currIndex) {
-  document.getElementById("detail_card_pokemon_image").src =
-    document.getElementById("pokemon_image_" + [currIndex]).src;
+function setDetailCardImage(imageUrl) {
+  const imgElement = document.getElementById("detail_card_pokemon_image");
+  const loadingHint = document.getElementById("loading_hint");
+
+  imgElement.classList.add("d_none");
+  loadingHint.classList.remove("d_none");
+
+  imgElement.onload = function () {
+    loadingHint.classList.add("d_none");
+    imgElement.classList.remove("d_none");
+  };
+
+  imgElement.src = imageUrl;
 }
 
-function setPokemonIdAndName(currIndex, pokemonDetail) {
-  document.getElementById("detail_card_pokemon_id").innerHTML =
-    document.getElementById("pokemon_id_" + [currIndex]).innerHTML;
+function setPokemonIdAndName(pokemonDetail) {
+  const pokemonId = ("000" + pokemonDetail.id).slice(-4);
+  document.getElementById("detail_card_pokemon_id").innerHTML = `#${pokemonId}`;
+
   document.getElementById("detail_card_name").innerHTML =
-    document.getElementById("pokemon_name_" + [currIndex]).innerHTML;
+    pokemonDetail.name.charAt(0).toUpperCase() + pokemonDetail.name.slice(1);
   document.getElementById("detail_card_types").innerHTML = getTypesTemplate(
     pokemonDetail.types
   );
@@ -184,38 +209,30 @@ async function playPokemonCry(audioUrl) {
   }
 }
 
-function setButtonAttributes(currIndex, pokemonUrl) {
+function setButtonAttributes(pokemonId) {
   document
-  .getElementById("btn_left")
-  .setAttribute(
-    "onclick",
-    `getPreviousDetailCard(${currIndex}, "${pokemonUrl}")`
-  );
-document
-  .getElementById("btn_right")
-  .setAttribute(
-    "onclick",
-    `getNextDetailCard(${currIndex}, "${pokemonUrl}")`
-  );
+    .getElementById("btn_left")
+    .setAttribute("onclick", `getPreviousDetailCard(${pokemonId})`);
+  document
+    .getElementById("btn_right")
+    .setAttribute("onclick", `getNextDetailCard(${pokemonId})`);
 }
 
 // Navigate in Detail Card
-function getPreviousDetailCard(currIndex, pokemonUrl) {
-  if (currIndex <= 0) {
-    currIndex = pokemon.length - 1;
-  } else {
-    currIndex -= 1;
-  }
-  renderDetailCard(currIndex, pokemonUrl);
+async function getPreviousDetailCard(pokemonId) {
+  let newIndex = pokemonId - 1;
+  if (newIndex < 1) newIndex = 1025; // Zurück zum letzten Pokémon
+
+  const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${newIndex}/`;
+  await renderDetailCard(newIndex, pokemonUrl);
 }
 
-function getNextDetailCard(currIndex, pokemonUrl) {
-  if (currIndex >= pokemon.length - 1) {
-    currIndex = 0;
-  } else {
-    currIndex += 1;
-  }
-  renderDetailCard(currIndex, pokemonUrl);
+async function getNextDetailCard(pokemonId) {
+  let newIndex = pokemonId + 1;
+  if (newIndex > 1025) newIndex = 1; // Zurück zum ersten Pokémon
+
+  const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${newIndex}/`;
+  await renderDetailCard(newIndex, pokemonUrl);
 }
 
 function loadImage(src) {
@@ -284,7 +301,8 @@ async function renderFilteredPokemonCards(filteredPokemon) {
 
     try {
       const pokemonDetails = await getPokemonDetails(pokemonUrl);
-      const card = createPokemonCard(i, pokemonDetails, pokemonUrl);
+      const pokemonId = pokemonDetails.id;
+      const card = createPokemonCard(pokemonId, pokemonDetails, pokemonUrl);
       cardsWrapper.appendChild(card);
     } catch (error) {
       console.warn(
@@ -298,30 +316,6 @@ async function renderFilteredPokemonCards(filteredPokemon) {
 async function getPokemonDetails(pokemonUrl) {
   pokemonDetails = await fetchPokemonDetails(pokemonUrl);
   return pokemonDetails;
-}
-
-function translateType(englishType) {
-  const typeTranslations = {
-    normal: "Normal",
-    fire: "Feuer",
-    water: "Wasser",
-    electric: "Elektro",
-    grass: "Pflanze",
-    ice: "Eis",
-    fighting: "Kampf",
-    poison: "Gift",
-    ground: "Boden",
-    flying: "Flug",
-    psychic: "Psycho",
-    bug: "Käfer",
-    rock: "Gestein",
-    ghost: "Geist",
-    dragon: "Drache",
-    dark: "Unlicht",
-    steel: "Stahl",
-    fairy: "Fee",
-  };
-  return typeTranslations[englishType] || englishType;
 }
 
 // Loading Spinner
@@ -460,4 +454,29 @@ function extractStats(pokemonDetails) {
     acc[stat.stat.name] = stat.base_stat;
     return acc;
   }, {});
+}
+
+// Übersetzung
+function translateType(englishType) {
+  const typeTranslations = {
+    normal: "Normal",
+    fire: "Feuer",
+    water: "Wasser",
+    electric: "Elektro",
+    grass: "Pflanze",
+    ice: "Eis",
+    fighting: "Kampf",
+    poison: "Gift",
+    ground: "Boden",
+    flying: "Flug",
+    psychic: "Psycho",
+    bug: "Käfer",
+    rock: "Gestein",
+    ghost: "Geist",
+    dragon: "Drache",
+    dark: "Unlicht",
+    steel: "Stahl",
+    fairy: "Fee",
+  };
+  return typeTranslations[englishType] || englishType;
 }

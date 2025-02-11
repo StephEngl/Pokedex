@@ -132,16 +132,11 @@ main {
   flex-direction: column;
 }
 
-/* .pokemon_type {
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 20px;
-  padding: 5px 10px;
-  font-size: 14px;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  margin-bottom: 12px;
-} */
+#btn_left:hover,
+#btn_right:hover {
+  cursor: pointer;
+  scale: 1.2;
+}
 
 .pokemon_id,
 .pokemon_type {
@@ -158,7 +153,17 @@ main {
   pointer-events: none;
 }
 
+.pokemon_image_container {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  width: 100%;
+  height: 100%;
+}
+
 .pokemon_image {
+  max-width: 100%;
+  max-height: 100%;
   z-index: 1;
   filter: drop-shadow(8px 8px 16px rgba(0, 0, 0, 0.7));
 }
@@ -275,15 +280,25 @@ dialog:focus-visible {
   justify-content: space-between;
 }
 
+#detail_card_pokemon_image_container {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  margin-top: -80px;
+  margin-bottom: -20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .detail_card_pokemon_image {
   height: 250px;
-  z-index: 5;
-  margin-bottom: -20px;
-  margin-top: -80px;
+  max-width: 100%;
+  object-fit: contain;
   filter: drop-shadow(8px 8px 16px rgba(0, 0, 0, 0.7));
 }
 
-#pokemon_cry {
+.pokemon_cry {
   background-color: transparent;
   border: none;
   padding: 0;
@@ -292,19 +307,21 @@ dialog:focus-visible {
   height: auto;
   cursor: pointer;
   transition: transform 0.2s ease;
+  z-index: 1;
+  position: relative;
 }
 
-#pokemon_cry img {
+.pokemon_cry img {
   width: 36px;
   height: 36px;
-  display: block; /* Entfernt zusätzlichen Platz unter dem Bild */
+  display: block;
 }
 
-#pokemon_cry:hover {
+.pokemon_cry:hover {
   transform: scale(1.1);
 }
 
-#pokemon_cry:active {
+.pokemon_cry:active {
   transform: scale(0.95);
 }
 
@@ -397,7 +414,7 @@ dialog:focus-visible {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 100;
 }
 
 .loading_spinner {
@@ -426,4 +443,10 @@ footer {
 
 .d_none {
   display: none;
+}
+
+.loading_hint {
+  /* text-align: center; */
+  font-size: 14px;
+  color: #666;
 }

@@ -15,9 +15,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js" defer></script>
     <script src="template.js" defer></script>
- 
-
-
   </head>
   <body onload="init();">
     <!-- Header Section -->
@@ -72,14 +69,18 @@
               <h3 id="detail_card_name">Bisasam</h3>
               <div id="detail_card_pokemon_id">#0001</div>
             </div>
-            <button onclick="playPokemonCry(audioUrl)" id="pokemon_cry"><img src="assets/icons/speaker_button.svg" alt="Lautsprecher Symbol"></button>
+            <button onclick="playPokemonCry(audioUrl)" class="pokemon_cry" id="pokemon_cry">
+              <img
+                src="assets/icons/speaker_button.svg"
+                alt="Lautsprecher Symbol"
+              />
+            </button>
           </div>
-          <img
-            src="assets/img/pokemon_open.png"
-            alt=""
-            class="detail_card_pokemon_image"
-            id="detail_card_pokemon_image"
-          />
+          <div id="detail_card_pokemon_image_container">
+            <img src="" alt="" id="detail_card_pokemon_image" class="detail_card_pokemon_image">
+            <p id="loading_hint" class="d_none">Lädt...</p>
+          </div>
+
           <!-- Detail Container -->
           <div class="detail_card_details_container">
             <div class="details_slider">
@@ -90,25 +91,27 @@
             </div>
             <!-- About Section -->
             <div class="detail_card_details d_none" id="detail_card_details">
-              <div class="detail_card_types" id="detail_card_types">Pflanze</div>
+              <div class="detail_card_types" id="detail_card_types">
+                Pflanze
+              </div>
               <div class="about" id="about">
                 <table class="about_table" id="about_table">
-                    <tr>
-                      <td>Größe</td>
-                      <td id="pokemon_height">2.0m</td>
-                    </tr>
-                    <tr>
-                      <td>Gewicht</td>
-                      <td id="pokemon_weight">10kg</td>
-                    </tr>
-                    <tr>
-                      <td>Generation</td>
-                      <td id="pokemon_generation"></td>
-                    </tr>
-                    <tr>
-                      <td>Region</td>
-                      <td id="pokemon_region"></td>
-                    </tr>
+                  <tr>
+                    <td>Größe</td>
+                    <td id="pokemon_height">2.0m</td>
+                  </tr>
+                  <tr>
+                    <td>Gewicht</td>
+                    <td id="pokemon_weight">10kg</td>
+                  </tr>
+                  <tr>
+                    <td>Generation</td>
+                    <td id="pokemon_generation"></td>
+                  </tr>
+                  <tr>
+                    <td>Region</td>
+                    <td id="pokemon_region"></td>
+                  </tr>
                 </table>
               </div>
             </div>
