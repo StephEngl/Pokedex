@@ -20,31 +20,6 @@ async function init() {
   await renderPokemonCards(0, limitLoadingPokemon);
 }
 
-// async function renderPokemonCards(offset, limit) {
-//   showSpinner();
-//   try {
-//     const newPokemon = await fetchPokemon(offset, limit);
-//     const imageLoadPromises = [];
-
-//     for (const pokemon of newPokemon) {
-//       const pokemonDetails = await getPokemonDetails(pokemon.url);
-//       const card = createPokemonCard(pokemonDetails, pokemon.url);
-//       cardsWrapper.appendChild(card);
-//       const imgElement = card.querySelector("img");
-//       if (imgElement) {
-//         imageLoadPromises.push(loadImage(imgElement.src));
-//       }
-//     }
-//     // Warten, bis alle Bilder geladen sind
-//     await Promise.all(imageLoadPromises);
-//     pokemonCache = cardsWrapper.innerHTML;
-//   } catch (error) {
-//     console.warn("Error rendering Pokemon cards:", error);
-//   } finally {
-//     hideSpinner();
-//   }
-// }
-
 async function renderPokemonCards(offset, limit) {
   showSpinner();
   try {
@@ -107,28 +82,30 @@ function createPokemonCard(pokemonDetails, pokemonUrl) {
   const formattedPokemonId = ("000" + pokemonId).slice(-4);
   const pokemonName = pokemonDetails.name;
   const pokemonImage = pokemonDetails.sprites.other.home.front_default;
-  const card = document.createElement("div");
 
+  const card = createCardElement(pokemonId, pokemonType_1, pokemonUrl);
+    card.innerHTML = getPokemonCardTemplate(pokemonId, formattedPokemonId,
+    pokemonName, pokemonImage, pokemonDetails.types);
+
+  setupImageLoading(card, pokemonId);
+  return card;
+}
+
+function createCardElement(pokemonId, pokemonType_1, pokemonUrl) {
+  const card = document.createElement("div");
   card.setAttribute("onclick", `openDetailCard(${pokemonId}, "${pokemonUrl}")`);
   card.className = `cards_content bg_${pokemonType_1}`;
   card.id = `cards_content_${pokemonId}`;
+  return card;
+}
 
-  card.innerHTML = getPokemonCardTemplate(
-    pokemonId,
-    formattedPokemonId,
-    pokemonName,
-    pokemonImage,
-    pokemonDetails.types
-  );
-  // Lade das Bild und wechsle die Klassen
+function setupImageLoading(card, pokemonId) {
   const img = card.querySelector(`#pokemon_image_${pokemonId}`);
   const loadingHint = card.querySelector(`#loading_hint_${pokemonId}`);
-
   img.onload = () => {
     loadingHint.classList.add("d_none");
     img.classList.remove("d_none");
   };
-  return card;
 }
 
 // Show Dialog -> DetailCard
