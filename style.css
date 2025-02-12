@@ -351,8 +351,8 @@ dialog:focus-visible {
 .detail_card_stats {
   display: flex;
   justify-content: center;
-  width: 80%;
-  height: 80%;
+  width: 90%;
+  padding-top: 24px;
 }
 
 .details_slider {
