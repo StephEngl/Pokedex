@@ -8,16 +8,16 @@ const ctx = document.getElementById("myChart");
 
 async function init() {
   // Registriere das benutzerdefinierte Plugin
-Chart.register({
-  id: "customBackgroundPlugin",
-  beforeDraw(chart) {
-    const ctx = chart.ctx;
-    ctx.save();
-    ctx.fillStyle = "rgba(255,255,255,0.5)"; // Hintergrundfarbe (z.B. halbtransparentes Weiß)
-    ctx.fillRect(0, 0, chart.width, chart.height); // Füllt den gesamten Canvas-Bereich
-    ctx.restore();
-  },
-});
+  Chart.register({
+    id: "customBackgroundPlugin",
+    beforeDraw(chart) {
+      const ctx = chart.ctx;
+      ctx.save();
+      ctx.fillStyle = "rgba(255,255,255,0.5)"; // Hintergrundfarbe (z.B. halbtransparentes Weiß)
+      ctx.fillRect(0, 0, chart.width, chart.height); // Füllt den gesamten Canvas-Bereich
+      ctx.restore();
+    },
+  });
   await renderPokemonCards(0, limitLoadingPokemon);
 }
 
@@ -27,15 +27,15 @@ async function renderPokemonCards(offset, limit) {
     const newPokemon = await fetchPokemon(offset, limit);
     const imageLoadPromises = [];
 
-  for (const pokemon of newPokemon) {
-    const pokemonDetails = await getPokemonDetails(pokemon.url);
-    const card = createPokemonCard(pokemonDetails, pokemon.url);
-    cardsWrapper.appendChild(card);
-    const imgElement = card.querySelector("img");
-    if (imgElement) {
-      imageLoadPromises.push(loadImage(imgElement.src));
+    for (const pokemon of newPokemon) {
+      const pokemonDetails = await getPokemonDetails(pokemon.url);
+      const card = createPokemonCard(pokemonDetails, pokemon.url);
+      cardsWrapper.appendChild(card);
+      const imgElement = card.querySelector("img");
+      if (imgElement) {
+        imageLoadPromises.push(loadImage(imgElement.src));
+      }
     }
-  } 
     // Warten, bis alle Bilder geladen sind
     await Promise.all(imageLoadPromises);
     pokemonCache = cardsWrapper.innerHTML;
@@ -96,12 +96,19 @@ async function renderDetailCard(pokemonId, pokemonUrl) {
   try {
     let pokemonDetail = await fetchPokemonDetails(pokemonUrl);
     const pokemonType = pokemonDetail.types[0].type.name;
+    const generation = getGeneration(pokemonDetail);
+    const regionName = getRegionName(generation);
+    const generationNumber = generation.id;
 
-    setClassBackgroundColor(pokemonType);
-    await getGenerationAndRegion(pokemonDetail);
+    const heightInCentimeters = getHeightInCentimeter(pokemonDetail);
+    const weightInKilograms = getWeightInKilograms(pokemonDetail);
+    const pokemonName = getPokemonName(pokemonDetail);
+
+    dialog.innerHTML = getDetailCardTemplate(pokemonType, pokemonName, regionName, generationNumber, heightInCentimeters, weightInKilograms);
+
     getStatsFromAPI(pokemonType, pokemonDetail);
     setPokemonIdAndName(pokemonDetail);
-    getHeightAndWeightFromApi(pokemonDetail);
+    
 
     setDetailCardImage(
       pokemonDetail.sprites.other["official-artwork"].front_default
@@ -119,22 +126,36 @@ async function renderDetailCard(pokemonId, pokemonUrl) {
   }
 }
 
-function setClassBackgroundColor(pokemonType) {
-  document.getElementById(
-    "detail_card"
-  ).className = `detail_card bg_${pokemonType}`;
+async function getGeneration(pokemonDetail) {
+  const pokemonSpeciesUrl = pokemonDetail.species.url;
+  const generation = await fetchPokemonGeneration(pokemonSpeciesUrl);
+  return generation;
 }
 
-async function getGenerationAndRegion(pokemonDetail) {
-  const pokemonSpeciesUrl = pokemonDetail.species.url;
-  const generationName = await fetchPokemonGeneration(pokemonSpeciesUrl);
-  const romanNumber = generationName.replace("generation-", "");
-  const generationNumber = romanToNumber(romanNumber);
-  document.getElementById("pokemon_generation").textContent =
-    generationNumber !== null ? generationNumber : "?";
-  const generationUrl = `https://pokeapi.co/api/v2/generation/${generationNumber}/`;
+async function getRegionName(pokemonGeneration) {
+  const generationUrl = pokemonGeneration.url;
   const regionName = await fetchPokemonRegionName(generationUrl);
+  return regionName;
+
+  document.getElementById("pokemon_generation").textContent = generationNumber;
   document.getElementById("pokemon_region").textContent = regionName;
+}
+
+function getHeightInCentimeter(pokemonDetail) {
+  const heightInCentimeters = (pokemonDetail.height * 10).toFixed(0);
+  return heightInCentimeters;
+}
+
+function getWeightInKilograms(pokemonDetail) {
+  const weightInKilograms = (pokemonDetail.weight / 10)
+    .toFixed(1)
+    .replace(".", ",");
+  return weightInKilograms;
+}
+
+function setPokemonName(pokemonDetail) {
+  const pokemonName = pokemonDetail.name.charAt(0).toUpperCase() + pokemonDetail.name.slice(1);
+  return pokemonName;
 }
 
 function getStatsFromAPI(pokemonType, pokemonDetail) {
@@ -148,20 +169,6 @@ function getStatsFromAPI(pokemonType, pokemonDetail) {
     stats["special-defense"],
     stats.speed,
   ]);
-}
-
-function getHeightAndWeightFromApi(pokemonDetail) {
-  const heightInCentimeters = (pokemonDetail.height * 10).toFixed(0);
-  const weightInKilograms = (pokemonDetail.weight / 10)
-    .toFixed(1)
-    .replace(".", ",");
-
-  document.getElementById(
-    "pokemon_height"
-  ).textContent = `${heightInCentimeters} cm`;
-  document.getElementById(
-    "pokemon_weight"
-  ).textContent = `${weightInKilograms} kg`;
 }
 
 function setDetailCardImage(imageUrl) {
@@ -188,8 +195,8 @@ function setPokemonIdAndName(pokemonDetail) {
   const pokemonId = ("000" + pokemonDetail.id).slice(-4);
   document.getElementById("detail_card_pokemon_id").innerHTML = `#${pokemonId}`;
 
-  document.getElementById("detail_card_name").innerHTML =
-    pokemonDetail.name.charAt(0).toUpperCase() + pokemonDetail.name.slice(1);
+  // document.getElementById("detail_card_name").innerHTML =
+  //   pokemonDetail.name.charAt(0).toUpperCase() + pokemonDetail.name.slice(1);
   document.getElementById("detail_card_types").innerHTML = getTypesTemplate(
     pokemonDetail.types
   );
@@ -270,11 +277,11 @@ function loadMorePokemon() {
 }
 
 async function fetchPokemon(offset, limit) {
-    const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`
-    );
-    const responseAsJson = await response.json();
-    return responseAsJson.results;
+  const response = await fetch(
+    `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`
+  );
+  const responseAsJson = await response.json();
+  return responseAsJson.results;
 }
 
 async function fetchPokemonDetails(url) {
@@ -364,7 +371,7 @@ function setBackgroundColor(iconElement, containerElement) {
 async function fetchPokemonGeneration(pokemonSpeciesUrl) {
   const response = await fetch(pokemonSpeciesUrl);
   const data = await response.json();
-  return data.generation.name; // Gibt z.B. "generation-i" zurück
+  return data.generation;
 }
 
 function romanToNumber(roman) {
