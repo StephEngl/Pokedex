@@ -36,7 +36,7 @@ async function renderDetailCard(pokemonId, pokemonUrl) {
     document
       .getElementById("detail_card")
       .classList.add("detail_card", `bg_${pokemonType}`);
-    renderDetailCardHead(pokemonType, pokemonDetail, pokemonId);
+    renderDetailCardHead(pokemonDetail, pokemonId);
     renderDetailCardBody(pokemonDetail, pokemonType);
   } catch (error) {
     console.error("Fehler beim Rendern der Detailkarte:", error);
@@ -45,16 +45,14 @@ async function renderDetailCard(pokemonId, pokemonUrl) {
 
 /**
  * Renders the head section of the detail card.
- * @param {string} pokemonType - The type of the Pokémon.
  * @param {Object} pokemonDetail - The details of the Pokémon.
  * @param {number} pokemonId - The ID of the Pokémon.
  */
-function renderDetailCardHead(pokemonType, pokemonDetail, pokemonId) {
-  const pokemonName = getPokemonName(pokemonDetail);
+function renderDetailCardHead(pokemonDetail, pokemonId) {
+  const pokemonName = getPokemonName(pokemonDetail.id, pokemonDetail.name);
   const pokemonCry = pokemonDetail.cries.latest;
   const imgUrl = pokemonDetail.sprites.other["official-artwork"].front_default;
   document.getElementById("detail_card").innerHTML = getDetailCardHeadTemplate(
-    pokemonType,
     pokemonName,
     pokemonId,
     pokemonCry,
@@ -63,14 +61,13 @@ function renderDetailCardHead(pokemonType, pokemonDetail, pokemonId) {
 }
 
 /**
- * Gets the formatted name of the Pokémon.
- * @param {Object} pokemonDetail - The details of the Pokémon.
- * @returns {string} The formatted name of the Pokémon.
+ * Gets the German name of the Pokémon.
+ * @param {number} pokemonId - The ID of the Pokémon.
+ * @param {string} englishName - The English name of the Pokémon.
+ * @returns {string} The German name of the Pokémon.
  */
-function getPokemonName(pokemonDetail) {
-  const pokemonName =
-    pokemonDetail.name.charAt(0).toUpperCase() + pokemonDetail.name.slice(1);
-  return pokemonName;
+function getPokemonName(pokemonId, englishName) {
+  return pokemon_names_german[pokemonId - 1] || englishName;
 }
 
 /**
@@ -103,8 +100,13 @@ async function renderDetailCardBody(pokemonDetail, pokemonType) {
     pokemonDetail.sprites.other["official-artwork"].front_shiny;
 
   document.getElementById("detail_card").innerHTML += getDetailCardBodyTemplate(
-    heightInCentimeters, weightInKilograms, regionName, generationNumber,
-    shinyImage, pokemonDetail.types);
+    heightInCentimeters,
+    weightInKilograms,
+    regionName,
+    generationNumber,
+    shinyImage,
+    pokemonDetail.types
+  );
   createRadarChartWithStatsFromAPI(pokemonType, pokemonDetail);
 }
 

@@ -29,8 +29,8 @@ function getPokemonCardTemplate(
 }
 
 /**
- * Generates the HTML template for the Pokémon types.
- * @param {Array<Object>} types - The list of Pokémon types.
+ * Generates the HTML template for the Pokémon types with translated names.
+ *  * @param {Array<Object>} types - The list of Pokémon types.
  * @returns {string} The HTML template for the Pokémon types.
  */
 function getTypesTemplate(types) {
@@ -43,7 +43,9 @@ function getTypesTemplate(types) {
               alt="${type.type.name}" 
               class="pokemon_type_icon"
             />
-            <p class="pokemon_type" id="type_${j}">${type.type.name}</p>
+            <p class="pokemon_type" id="type_${j}">${translateType(
+        type.type.name
+      )}</p>
           </div>
         `
     )
@@ -59,13 +61,7 @@ function getTypesTemplate(types) {
  * @param {string} imgUrl - The URL of the Pokémon's image.
  * @returns {string} The HTML template for the detail card header.
  */
-function getDetailCardHeadTemplate(
-  pokemonType,
-  pokemonName,
-  pokemonId,
-  pokemonCry,
-  imgUrl
-) {
+function getDetailCardHeadTemplate(pokemonName, pokemonId, pokemonCry, imgUrl) {
   return `
     <div class="img_control">
       <div id="btn_left">

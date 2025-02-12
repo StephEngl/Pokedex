@@ -140,7 +140,7 @@ function createPokemonCard(pokemonDetails, pokemonUrl) {
   const pokemonId = pokemonDetails.id;
   const pokemonType_1 = pokemonDetails.types[0].type.name;
   const formattedPokemonId = ("000" + pokemonId).slice(-4);
-  const pokemonName = pokemonDetails.name;
+  const pokemonName = pokemon_names_german[pokemonId - 1] || pokemonDetails.name;
   const pokemonImage = pokemonDetails.sprites.other.home.front_default;
 
   const card = createCardElement(pokemonId, pokemonType_1, pokemonUrl);
