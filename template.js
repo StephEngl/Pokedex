@@ -130,7 +130,6 @@ function getDetailCardBodyTemplate(
         <div class="details_slider">
           <p onclick="showCardContent('detail_card_details', 'slider_infos')" id="slider_infos" class="active">Infos</p>
           <p onclick="showCardContent('detail_card_stats', 'slider_stats')" id="slider_stats">Statuswerte</p>
-          <p onclick="showCardContent('evolution_chain', 'slider_evolution')" id="slider_evolution">Entwicklung</p>
           <p onclick="showCardContent('shiny_form', 'slider_forms')" id="slider_forms">Schillernde Form</p>
         </div>
         <!-- About Section -->
@@ -163,8 +162,6 @@ function getDetailCardBodyTemplate(
         <div class="detail_card_stats d_none" id="detail_card_stats">
           <canvas id="myChart"></canvas>
         </div>
-        <!-- Evolution Chain -->
-        <div class="evolution_chain d_none" id="evolution_chain"></div>
         <!-- Forms Section -->
         <div class="forms_container d_none" id="shiny_form">
           <img src="${shinyImage}" alt="" id="shiny_image" />

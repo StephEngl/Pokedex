@@ -17,6 +17,34 @@ const limitLoadingPokemon = 20;
 let myRadarChart = null;
 
 /**
+ * @const {Object<string, string>} typeTranslations
+ * @description A map that translates Pokemon types from English to German.
+ * Each key represents the English type name, and its corresponding value
+ * is the German translation. This object is used to provide localized
+ * type information within the application.
+ */
+const typeTranslations = {
+  normal: "Normal",
+  fire: "Feuer",
+  water: "Wasser",
+  electric: "Elektro",
+  grass: "Pflanze",
+  ice: "Eis",
+  fighting: "Kampf",
+  poison: "Gift",
+  ground: "Boden",
+  flying: "Flug",
+  psychic: "Psycho",
+  bug: "Käfer",
+  rock: "Gestein",
+  ghost: "Geist",
+  dragon: "Drache",
+  dark: "Unlicht",
+  steel: "Stahl",
+  fairy: "Fee",
+};
+
+/**
  * Initializes the application.
  * Registers a custom plugin for the radar chart and renders initial Pokemon cards.
  * @returns {Promise<void>}
@@ -62,10 +90,12 @@ async function renderPokemonCards(offset, limit) {
  * @returns {Promise<Array>} Array of created Pokemon card elements.
  */
 async function createPokemonCards(pokemonList) {
-  return Promise.all(pokemonList.map(async (pokemon) => {
-    const pokemonDetails = await getPokemonDetails(pokemon.url);
-    return createPokemonCard(pokemonDetails, pokemon.url);
-  }));
+  return Promise.all(
+    pokemonList.map(async (pokemon) => {
+      const pokemonDetails = await getPokemonDetails(pokemon.url);
+      return createPokemonCard(pokemonDetails, pokemon.url);
+    })
+  );
 }
 
 /**
@@ -73,7 +103,7 @@ async function createPokemonCards(pokemonList) {
  * @param {Array} cards - Array of card elements to append.
  */
 function appendCardsToWrapper(cards) {
-  cards.forEach(card => cardsWrapper.appendChild(card));
+  cards.forEach((card) => cardsWrapper.appendChild(card));
 }
 
 /**
@@ -82,8 +112,8 @@ function appendCardsToWrapper(cards) {
  * @returns {Promise<void>}
  */
 async function loadAllCardImages(cards) {
-  const imagePromises = cards.map(card => {
-    const img = card.querySelector('img');
+  const imagePromises = cards.map((card) => {
+    const img = card.querySelector("img");
     return img ? loadImage(img.src) : Promise.resolve();
   });
   await Promise.all(imagePromises);
@@ -140,12 +170,18 @@ function createPokemonCard(pokemonDetails, pokemonUrl) {
   const pokemonId = pokemonDetails.id;
   const pokemonType_1 = pokemonDetails.types[0].type.name;
   const formattedPokemonId = ("000" + pokemonId).slice(-4);
-  const pokemonName = pokemon_names_german[pokemonId - 1] || pokemonDetails.name;
+  const pokemonName =
+    pokemon_names_german[pokemonId - 1] || pokemonDetails.name;
   const pokemonImage = pokemonDetails.sprites.other.home.front_default;
 
   const card = createCardElement(pokemonId, pokemonType_1, pokemonUrl);
-    card.innerHTML = getPokemonCardTemplate(pokemonId, formattedPokemonId,
-    pokemonName, pokemonImage, pokemonDetails.types);
+  card.innerHTML = getPokemonCardTemplate(
+    pokemonId,
+    formattedPokemonId,
+    pokemonName,
+    pokemonImage,
+    pokemonDetails.types
+  );
 
   setupImageLoading(card, pokemonId);
   return card;
@@ -206,28 +242,6 @@ function hideLoadMoreButton() {
   document.getElementById("load_more_button").style.display = "none";
 }
 
-// /**
-//  * Handles Pokemon search functionality.
-//  * @returns {Promise<void>}
-//  */
-// async function searchPokemon() {
-//   const input = document.getElementById("search_input").value.toLowerCase();
-//   if (searchTimeout) clearTimeout(searchTimeout);
-//   if (input.length < 3) {
-//     resetToCachedPokemon();
-//     return;
-//   }
-
-//   searchTimeout = setTimeout(async () => {
-//     try {
-//       const filteredPokemon = await fetchFilteredPokemon(input);
-//       await renderFilteredPokemonCards(filteredPokemon);
-//     } catch (error) {
-//       console.error("Fehler bei der Pokémon-Suche:", error);
-//     }
-//   }, 300); // 300ms time delay
-// }
-
 /**
  * Handles Pokemon search functionality.
  * @returns {Promise<void>}
@@ -260,16 +274,16 @@ async function searchPokemon() {
 async function searchGermanPokemon(input) {
   if (!pokemon_names_german) return [];
 
-  const germanMatches = pokemon_names_german.filter(name =>
+  const germanMatches = pokemon_names_german.filter((name) =>
     name.toLowerCase().startsWith(input)
   );
 
   if (germanMatches.length === 0) return [];
-
-  const pokemonIds = germanMatches.map(name => pokemon_names_german.indexOf(name) + 1);
-
+  const pokemonIds = germanMatches.map(
+    (name) => pokemon_names_german.indexOf(name) + 1
+  );
   return await Promise.all(
-    pokemonIds.map(async pokemonId => {
+    pokemonIds.map(async (pokemonId) => {
       const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${pokemonId}/`;
       return await getPokemonDetails(pokemonUrl);
     })
@@ -283,8 +297,11 @@ async function searchGermanPokemon(input) {
 function updateCardsWrapper(filteredPokemon) {
   cardsWrapper.innerHTML = ""; // Clear previous results
   if (filteredPokemon.length > 0) {
-    filteredPokemon.forEach(pokemon => {
-      appendPokemonCard(pokemon, `https://pokeapi.co/api/v2/pokemon/${pokemon.id}/`);
+    filteredPokemon.forEach((pokemon) => {
+      appendPokemonCard(
+        pokemon,
+        `https://pokeapi.co/api/v2/pokemon/${pokemon.id}/`
+      );
     });
   } else {
     cardsWrapper.innerHTML = "<p>Kein Pokémon mit diesem Namen gefunden.</p>";
@@ -362,25 +379,5 @@ function hideSpinner() {
  * @returns {string} The German translation of the Pokemon type.
  */
 function translateType(englishType) {
-  const typeTranslations = {
-    normal: "Normal",
-    fire: "Feuer",
-    water: "Wasser",
-    electric: "Elektro",
-    grass: "Pflanze",
-    ice: "Eis",
-    fighting: "Kampf",
-    poison: "Gift",
-    ground: "Boden",
-    flying: "Flug",
-    psychic: "Psycho",
-    bug: "Käfer",
-    rock: "Gestein",
-    ghost: "Geist",
-    dragon: "Drache",
-    dark: "Unlicht",
-    steel: "Stahl",
-    fairy: "Fee",
-  };
   return typeTranslations[englishType] || englishType;
 }

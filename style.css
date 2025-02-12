@@ -56,7 +56,6 @@ header {
   background-color: #3aa18f;
   box-shadow: 5px 5px 15px rgb(39, 39, 39);
   z-index: 5;
-  /* height: 80px; */
 }
 
 .header_content {
@@ -97,7 +96,6 @@ input:focus {
 }
 
 /* Main Section */
-
 main {
   flex-grow: 1;
   margin: 36px;
@@ -154,8 +152,8 @@ main {
   width: 160px;
   height: 160px;
   position: absolute;
-  right: -40px; /* 1/4 des Balls (30px) ist außerhalb der Karte */
-  bottom: -40px; /* 1/4 des Balls (30px) ist außerhalb der Karte */
+  right: -40px;
+  bottom: -40px;
   opacity: 0.2;
   pointer-events: none;
 }
@@ -259,7 +257,7 @@ main {
 
 .loading_spinner {
   animation: wobble 1s infinite alternate ease-in-out;
-  transform-origin: 50% 100%; /* Zentrum unten */
+  transform-origin: 50% 100%;
 }
 
 .loading_spinner img {

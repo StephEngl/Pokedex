@@ -178,7 +178,7 @@ dialog:focus-visible {
   border-radius: 20px;
   padding: 5px 10px;
   font-size: 14px;
-  width: fit-content; /* Passt die Breite an den Inhalt an */
+  width: fit-content;
   margin-bottom: 12px;
 }
 
@@ -189,15 +189,15 @@ dialog:focus-visible {
 }
 
 .forms_container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 16px;
 }
 
 #shiny_image {
-    width: 80%;
-  }
+  width: 80%;
+}
 
 @media (max-width: 600px) {
   dialog {

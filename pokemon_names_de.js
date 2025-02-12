@@ -1,3 +1,10 @@
+/**
+ * @type {string[]}
+ * @description An array that will contain the German names of Pokémon. This array is intended to be populated
+ * with the German names of Pokémon, likely in the order of their National Pokédex number.
+ * Once populated, it can be used for translating Pokémon names from English to German or for
+ * enabling searching of Pokémon by their German names within the application.
+ */
 let pokemon_names_german = [
   "Bisasam",
   "Bisaknosp",
