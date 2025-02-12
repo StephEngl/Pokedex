@@ -206,26 +206,98 @@ function hideLoadMoreButton() {
   document.getElementById("load_more_button").style.display = "none";
 }
 
+// /**
+//  * Handles Pokemon search functionality.
+//  * @returns {Promise<void>}
+//  */
+// async function searchPokemon() {
+//   const input = document.getElementById("search_input").value.toLowerCase();
+//   if (searchTimeout) clearTimeout(searchTimeout);
+//   if (input.length < 3) {
+//     resetToCachedPokemon();
+//     return;
+//   }
+
+//   searchTimeout = setTimeout(async () => {
+//     try {
+//       const filteredPokemon = await fetchFilteredPokemon(input);
+//       await renderFilteredPokemonCards(filteredPokemon);
+//     } catch (error) {
+//       console.error("Fehler bei der Pokémon-Suche:", error);
+//     }
+//   }, 300); // 300ms time delay
+// }
+
 /**
  * Handles Pokemon search functionality.
  * @returns {Promise<void>}
  */
 async function searchPokemon() {
   const input = document.getElementById("search_input").value.toLowerCase();
-  if (searchTimeout) clearTimeout(searchTimeout);
   if (input.length < 3) {
+    clearTimeout(searchTimeout);
     resetToCachedPokemon();
     return;
   }
 
   searchTimeout = setTimeout(async () => {
     try {
-      const filteredPokemon = await fetchFilteredPokemon(input);
-      await renderFilteredPokemonCards(filteredPokemon);
+      const filteredPokemon = await searchGermanPokemon(input);
+      updateCardsWrapper(filteredPokemon);
     } catch (error) {
-      console.error("Fehler bei der Pokémon-Suche:", error);
+      handleSearchError(error);
+    } finally {
+      hideLoadMoreButton();
     }
-  }, 300); // 300ms time delay
+  }, 300);
+}
+
+/**
+ * Searches for Pokemon based on the German name.
+ * @param {string} input - The search input.
+ * @returns {Promise<Array>} - Array of found pokemon
+ */
+async function searchGermanPokemon(input) {
+  if (!pokemon_names_german) return [];
+
+  const germanMatches = pokemon_names_german.filter(name =>
+    name.toLowerCase().startsWith(input)
+  );
+
+  if (germanMatches.length === 0) return [];
+
+  const pokemonIds = germanMatches.map(name => pokemon_names_german.indexOf(name) + 1);
+
+  return await Promise.all(
+    pokemonIds.map(async pokemonId => {
+      const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${pokemonId}/`;
+      return await getPokemonDetails(pokemonUrl);
+    })
+  );
+}
+
+/**
+ * Updates the cards wrapper with the given Pokemon data.
+ * @param {Array} filteredPokemon - The filtered Pokemon data.
+ */
+function updateCardsWrapper(filteredPokemon) {
+  cardsWrapper.innerHTML = ""; // Clear previous results
+  if (filteredPokemon.length > 0) {
+    filteredPokemon.forEach(pokemon => {
+      appendPokemonCard(pokemon, `https://pokeapi.co/api/v2/pokemon/${pokemon.id}/`);
+    });
+  } else {
+    cardsWrapper.innerHTML = "<p>Kein Pokémon mit diesem Namen gefunden.</p>";
+  }
+}
+
+/**
+ * Handles errors that occur during the search.
+ * @param {Error} error - The error object.
+ */
+function handleSearchError(error) {
+  console.error("Fehler bei der Pokémon-Suche:", error);
+  cardsWrapper.innerHTML = "<p>Fehler bei der Suche.</p>";
 }
 
 /**

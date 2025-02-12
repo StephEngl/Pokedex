@@ -11,11 +11,12 @@
       type="image/x-icon"
     />
 
-    <link rel="stylesheet" href="style_detail_cards.css">
+    <link rel="stylesheet" href="style_detail_cards.css" />
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="pokemon_names_de.js"></script>
+
     <script src="script.js" defer></script>
+    <script src="pokemon_names_de.js"></script>
     <script src="script_detail_cards.js" defer></script>
     <script src="template.js" defer></script>
   </head>
@@ -47,7 +48,9 @@
 
       <!-- DetailCards -->
       <div class="cards_wrapper" id="cards_wrapper"></div>
-      <button id="load_more_button" onclick="loadMorePokemon()">Weitere anzeigen...</button>
+      <button id="load_more_button" onclick="loadMorePokemon()">
+        Weitere anzeigen...
+      </button>
 
       <dialog id="overlay" onmousedown="onMouseDown(event)">
         <div class="detail_card" id="detail_card"></div>
