@@ -144,3 +144,49 @@ function getDetailCardBodyTemplate(
     
   `;
 }
+
+function getRadarChartConfigTemplate(statValues, rgbaColor, backgroundColor) {
+  return {
+    type: "radar",
+    data: {
+      labels: ["KP", "ANG", "VER", "SP-ANG", "SP-VER", "INIT"],
+      datasets: [
+        {
+          label: "Statuswerte",
+          data: statValues,
+          borderWidth: 1,
+          backgroundColor: rgbaColor,
+          borderColor: backgroundColor,
+          pointBackgroundColor: backgroundColor,
+          pointBorderColor: "#fff",
+          pointHoverBackgroundColor: "#fff",
+          pointHoverBorderColor: backgroundColor,
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
+      scales: {
+        r: {
+          beginAtZero: true,
+          pointLabels: {
+            font: {
+              weight: "bold",
+            },
+            color: "grey",
+          },
+          ticks: {
+            stepSize: 20,
+          },
+        },
+      },
+      animation: {
+        duration: 0, // show instantly without Animation
+      },
+    },
+  };
+}

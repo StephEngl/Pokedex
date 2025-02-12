@@ -3,17 +3,16 @@ let pokemonCache = [];
 let cardsWrapper = document.getElementById("cards_wrapper");
 let currentOffset = 0;
 const limitLoadingPokemon = 20;
-let myChart = null;
-const ctx = document.getElementById("myChart");
+let myRadarChart = null;
 
 async function init() {
-  // Registriere das benutzerdefinierte Plugin
+  // register custom plugin for radar-chart
   Chart.register({
     id: "customBackgroundPlugin",
     beforeDraw(chart) {
       const ctx = chart.ctx;
       ctx.save();
-      ctx.fillStyle = "rgba(255,255,255,0.5)"; // Hintergrundfarbe (z.B. halbtransparentes Weiß)
+      ctx.fillStyle = "rgba(255,255,255,0.5)";
       ctx.fillRect(0, 0, chart.width, chart.height); // Füllt den gesamten Canvas-Bereich
       ctx.restore();
     },
@@ -159,7 +158,6 @@ async function renderDetailCardBody(pokemonDetail, pokemonType) {
   const generationNumber = await getGeneration(generationUrl);
   const shinyImage = pokemonDetail.sprites.other["official-artwork"].front_shiny;
 
-  // getStatsFromAPI(pokemonType, pokemonDetail);
   document.getElementById("detail_card").innerHTML += getDetailCardBodyTemplate(
     heightInCentimeters,
     weightInKilograms,
@@ -168,6 +166,7 @@ async function renderDetailCardBody(pokemonDetail, pokemonType) {
     shinyImage,
     pokemonDetail.types
   );
+  createRadarChartWithStatsFromAPI(pokemonType, pokemonDetail);
 }
 
 // Get Generation
@@ -220,8 +219,8 @@ function getWeightInKilograms(pokemonDetail) {
   return weightInKilograms;
 }
 
-// Get Stats from API
-function getStatsFromAPI(pokemonType, pokemonDetail) {
+// Get Stats from API and create Radar Chart
+function createRadarChartWithStatsFromAPI(pokemonType, pokemonDetail) {
   const stats = extractStats(pokemonDetail);
 
   createRadarChart(pokemonType, [
@@ -232,6 +231,31 @@ function getStatsFromAPI(pokemonType, pokemonDetail) {
     stats["special-defense"],
     stats.speed,
   ]);
+}
+
+function extractStats(pokemonDetails) {
+  return pokemonDetails.stats.reduce((acc, stat) => {
+    acc[stat.stat.name] = stat.base_stat;
+    return acc;
+  }, {});
+}
+
+// Radar Chart for stats
+function createRadarChart(pokemonType, statValues) {
+  const ctx = document.getElementById("myChart").getContext("2d");
+  if (myRadarChart) myRadarChart.destroy();
+
+  const rgbaColor = getRGBAColor(pokemonType);
+  const backgroundColor = rgbaColor.replace(", 0.4)", ")").replace("rgba", "rgb");
+
+  myRadarChart = new Chart(ctx, getRadarChartConfigTemplate(statValues, rgbaColor, backgroundColor));
+}
+
+function getRGBAColor(pokemonType) {
+  const backgroundColor = getComputedStyle(
+    document.querySelector(`.bg_${pokemonType}`)
+  ).backgroundColor;
+  return backgroundColor.replace("rgb", "rgba").replace(")", ", 0.4)");
 }
 
 // Navigate in Detail Card
@@ -289,6 +313,7 @@ function detailCardHighlightActiveTab(sliderId) {
   });
 }
 
+// Loading Button
 function loadMorePokemon() {
   currentOffset += limitLoadingPokemon;
   const limit = currentOffset + limitLoadingPokemon;
@@ -304,6 +329,7 @@ async function searchPokemon() {
 
   if (input.length < 3) {
     cardsWrapper.innerHTML = pokemonCache;
+    document.getElementById("load_more_button").style.display = "block";
     return;
   }
 
@@ -341,6 +367,7 @@ async function renderFilteredPokemonCards(filteredPokemon) {
       );
     }
   }
+  document.getElementById("load_more_button").style.display = "none";
 }
 
 // Loading Spinner
@@ -350,68 +377,6 @@ function showSpinner() {
 
 function hideSpinner() {
   document.getElementById("loading_spinner_overlay").style.display = "none";
-}
-
-// Radar Chart for stats
-function createRadarChart(pokemonType, statValues) {
-  const ctx = document.getElementById("myChart").getContext("2d");
-
-  // Bestehendes Chart zerstören, falls vorhanden
-  if (myChart) {
-    myChart.destroy();
-  }
-  // Bestimme die Hintergrundfarbe basierend auf dem Pokémon-Typ
-  const backgroundColor = getComputedStyle(
-    document.querySelector(`.bg_${pokemonType}`)
-  ).backgroundColor;
-
-  // Erstelle eine semi-transparente Version der Farbe für das Dataset
-  const rgbaColor = backgroundColor
-    .replace("rgb", "rgba")
-    .replace(")", ", 0.4)");
-
-  // Neues Chart erstellen und in der globalen Variable speichern
-  myChart = new Chart(ctx, {
-    type: "radar",
-    data: {
-      labels: ["KP", "ANG", "VER", "SP-ANG", "SP-VER", "INIT"],
-      datasets: [
-        {
-          label: "Statuswerte",
-          data: statValues,
-          borderWidth: 1,
-          backgroundColor: rgbaColor,
-          borderColor: backgroundColor,
-          pointBackgroundColor: backgroundColor,
-          pointBorderColor: "#fff",
-          pointHoverBackgroundColor: "#fff",
-          pointHoverBorderColor: backgroundColor,
-        },
-      ],
-    },
-    options: {
-      plugins: {
-        legend: {
-          display: false, // Blendet die Legende aus
-        },
-      },
-      scales: {
-        r: {
-          beginAtZero: true,
-          ticks: {
-            stepSize: 20,
-          },
-        },
-      },
-    },
-  });
-}
-
-function extractStats(pokemonDetails) {
-  return pokemonDetails.stats.reduce((acc, stat) => {
-    acc[stat.stat.name] = stat.base_stat;
-    return acc;
-  }, {});
 }
 
 // Übersetzung
