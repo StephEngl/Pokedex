@@ -1,12 +1,27 @@
+/** @type {Array} Array to store search timeout IDs */
 let searchTimeout = [];
+
+/** @type {Array} Array to cache Pokemon data */
 let pokemonCache = [];
+
+/** @type {HTMLElement} Reference to the cards wrapper element */
 let cardsWrapper = document.getElementById("cards_wrapper");
+
+/** @type {number} Current offset for Pokemon loading */
 let currentOffset = 0;
+
+/** @type {number} Limit for the number of Pokemon to load at once */
 const limitLoadingPokemon = 20;
+
+/** @type {Chart|null} Reference to the radar chart instance */
 let myRadarChart = null;
 
+/**
+ * Initializes the application.
+ * Registers a custom plugin for the radar chart and renders initial Pokemon cards.
+ * @returns {Promise<void>}
+ */
 async function init() {
-  // register custom plugin for radar-chart
   Chart.register({
     id: "customBackgroundPlugin",
     beforeDraw(chart) {
@@ -20,6 +35,12 @@ async function init() {
   await renderPokemonCards(0, limitLoadingPokemon);
 }
 
+/**
+ * Renders Pokemon cards.
+ * @param {number} offset - The offset for fetching Pokemon.
+ * @param {number} limit - The limit of Pokemon to fetch.
+ * @returns {Promise<void>}
+ */
 async function renderPokemonCards(offset, limit) {
   showSpinner();
   try {
@@ -35,6 +56,11 @@ async function renderPokemonCards(offset, limit) {
   }
 }
 
+/**
+ * Creates Pokemon cards from a list of Pokemon.
+ * @param {Array} pokemonList - List of Pokemon to create cards for.
+ * @returns {Promise<Array>} Array of created Pokemon card elements.
+ */
 async function createPokemonCards(pokemonList) {
   return Promise.all(pokemonList.map(async (pokemon) => {
     const pokemonDetails = await getPokemonDetails(pokemon.url);
@@ -42,10 +68,19 @@ async function createPokemonCards(pokemonList) {
   }));
 }
 
+/**
+ * Appends cards to the cards wrapper.
+ * @param {Array} cards - Array of card elements to append.
+ */
 function appendCardsToWrapper(cards) {
   cards.forEach(card => cardsWrapper.appendChild(card));
 }
 
+/**
+ * Loads all card images.
+ * @param {Array} cards - Array of card elements.
+ * @returns {Promise<void>}
+ */
 async function loadAllCardImages(cards) {
   const imagePromises = cards.map(card => {
     const img = card.querySelector('img');
@@ -54,10 +89,19 @@ async function loadAllCardImages(cards) {
   await Promise.all(imagePromises);
 }
 
+/**
+ * Updates the Pokemon cache with current cards wrapper content.
+ */
 function updatePokemonCache() {
   pokemonCache = cardsWrapper.innerHTML;
 }
 
+/**
+ * Fetches Pokemon data from the API.
+ * @param {number} offset - The offset for fetching Pokemon.
+ * @param {number} limit - The limit of Pokemon to fetch.
+ * @returns {Promise<Array>} Array of fetched Pokemon data.
+ */
 async function fetchPokemon(offset, limit) {
   const response = await fetch(
     `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`
@@ -66,16 +110,32 @@ async function fetchPokemon(offset, limit) {
   return responseAsJson.results;
 }
 
+/**
+ * Gets detailed Pokemon information.
+ * @param {string} pokemonUrl - URL to fetch Pokemon details.
+ * @returns {Promise<Object>} Detailed Pokemon data.
+ */
 async function getPokemonDetails(pokemonUrl) {
   const pokemonDetails = await fetchPokemonDetails(pokemonUrl);
   return pokemonDetails;
 }
 
+/**
+ * Fetches detailed Pokemon information from the API.
+ * @param {string} url - URL to fetch Pokemon details.
+ * @returns {Promise<Object>} Detailed Pokemon data.
+ */
 async function fetchPokemonDetails(url) {
   const response = await fetch(url);
   return await response.json();
 }
 
+/**
+ * Creates a Pokemon card element.
+ * @param {Object} pokemonDetails - Detailed Pokemon data.
+ * @param {string} pokemonUrl - URL of the Pokemon data.
+ * @returns {HTMLElement} Created Pokemon card element.
+ */
 function createPokemonCard(pokemonDetails, pokemonUrl) {
   const pokemonId = pokemonDetails.id;
   const pokemonType_1 = pokemonDetails.types[0].type.name;
@@ -91,6 +151,13 @@ function createPokemonCard(pokemonDetails, pokemonUrl) {
   return card;
 }
 
+/**
+ * Creates a card element for a Pokemon to open Detail Card.
+ * @param {number} pokemonId - ID of the Pokemon.
+ * @param {string} pokemonType_1 - Primary type of the Pokemon.
+ * @param {string} pokemonUrl - URL of the Pokemon data.
+ * @returns {HTMLElement} Created card element.
+ */
 function createCardElement(pokemonId, pokemonType_1, pokemonUrl) {
   const card = document.createElement("div");
   card.setAttribute("onclick", `openDetailCard(${pokemonId}, "${pokemonUrl}")`);
@@ -99,6 +166,11 @@ function createCardElement(pokemonId, pokemonType_1, pokemonUrl) {
   return card;
 }
 
+/**
+ * Sets up image loading for a Pokemon card.
+ * @param {HTMLElement} card - The card element.
+ * @param {number} pokemonId - ID of the Pokemon.
+ */
 function setupImageLoading(card, pokemonId) {
   const img = card.querySelector(`#pokemon_image_${pokemonId}`);
   const loadingHint = card.querySelector(`#loading_hint_${pokemonId}`);
@@ -108,23 +180,36 @@ function setupImageLoading(card, pokemonId) {
   };
 }
 
+/**
+ * Appends a Pokemon card to the cards wrapper.
+ * @param {Object} pokemonDetails - Detailed Pokemon data.
+ * @param {string} pokemonUrl - URL of the Pokemon data.
+ */
 function appendPokemonCard(pokemonDetails, pokemonUrl) {
   const card = createPokemonCard(pokemonDetails, pokemonUrl);
   cardsWrapper.appendChild(card);
 }
 
-// Loading Button
+/**
+ * Loads more Pokemon cards.
+ */
 function loadMorePokemon() {
   currentOffset += limitLoadingPokemon;
   const limit = currentOffset + limitLoadingPokemon;
   renderPokemonCards(currentOffset, limitLoadingPokemon);
 }
 
+/**
+ * Hides the "Load More" button.
+ */
 function hideLoadMoreButton() {
   document.getElementById("load_more_button").style.display = "none";
 }
 
-// Search Pokemon Names
+/**
+ * Handles Pokemon search functionality.
+ * @returns {Promise<void>}
+ */
 async function searchPokemon() {
   const input = document.getElementById("search_input").value.toLowerCase();
   if (searchTimeout) clearTimeout(searchTimeout);
@@ -143,11 +228,19 @@ async function searchPokemon() {
   }, 300); // 300ms time delay
 }
 
+/**
+ * Resets the display to cached Pokemon data.
+ */
 function resetToCachedPokemon() {
   cardsWrapper.innerHTML = pokemonCache;
   document.getElementById("load_more_button").style.display = "block";
 }
 
+/**
+ * Fetches filtered Pokemon based on search input.
+ * @param {string} input - Search input string.
+ * @returns {Promise<Array>} Filtered Pokemon data.
+ */
 async function fetchFilteredPokemon(input) {
   const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1025`);
   const data = await response.json();
@@ -156,6 +249,11 @@ async function fetchFilteredPokemon(input) {
   );
 }
 
+/**
+ * Renders filtered Pokemon cards.
+ * @param {Array} filteredPokemon - Array of filtered Pokemon data.
+ * @returns {Promise<void>}
+ */
 async function renderFilteredPokemonCards(filteredPokemon) {
   cardsWrapper.innerHTML = "";
   for (let i = 0; i < filteredPokemon.length; i++) {
@@ -172,16 +270,25 @@ async function renderFilteredPokemonCards(filteredPokemon) {
   hideLoadMoreButton();
 }
 
-// Loading Spinner
+/**
+ * Shows the loading spinner.
+ */
 function showSpinner() {
   document.getElementById("loading_spinner_overlay").style.display = "flex";
 }
 
+/**
+ * Hides the loading spinner.
+ */
 function hideSpinner() {
   document.getElementById("loading_spinner_overlay").style.display = "none";
 }
 
-// Übersetzung
+/**
+ * Translates Pokemon types from English to German.
+ * @param {string} englishType - The English name of the Pokemon type.
+ * @returns {string} The German translation of the Pokemon type.
+ */
 function translateType(englishType) {
   const typeTranslations = {
     normal: "Normal",
