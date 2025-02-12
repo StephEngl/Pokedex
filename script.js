@@ -114,7 +114,8 @@ async function renderDetailCard(pokemonId, pokemonUrl) {
   try {
     let pokemonDetail = await fetchPokemonDetails(pokemonUrl);
     const pokemonType = pokemonDetail.types[0].type.name;
-    document.getElementById("detail_card").classList.add(`bg_${pokemonType}`);
+    document.getElementById("detail_card").classList = "";
+    document.getElementById("detail_card").classList.add("detail_card", `bg_${pokemonType}`);
     renderDetailCardHead(pokemonType, pokemonDetail, pokemonId);
     renderDetailCardBody(pokemonDetail, pokemonType);
   } catch (error) {
