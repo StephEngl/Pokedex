@@ -1,3 +1,12 @@
+/**
+ * Generates the HTML template for a Pokémon card.
+ * @param {number} i - The index of the Pokémon card.
+ * @param {string} pokemonId - The ID of the Pokémon.
+ * @param {string} pokemonName - The name of the Pokémon.
+ * @param {string} pokemonImage - The URL of the Pokémon image.
+ * @param {Array<Object>} types - The list of Pokémon types.
+ * @returns {string} The HTML template for the Pokémon card.
+ */
 function getPokemonCardTemplate(
   i,
   pokemonId,
@@ -19,6 +28,11 @@ function getPokemonCardTemplate(
     `;
 }
 
+/**
+ * Generates the HTML template for the Pokémon types.
+ * @param {Array<Object>} types - The list of Pokémon types.
+ * @returns {string} The HTML template for the Pokémon types.
+ */
 function getTypesTemplate(types) {
   return types
     .map(
@@ -36,6 +50,15 @@ function getTypesTemplate(types) {
     .join("");
 }
 
+/**
+ * Generates the HTML template for the header section of the detail card.
+ * @param {string} pokemonType - The type of the Pokémon.
+ * @param {string} pokemonName - The name of the Pokémon.
+ * @param {number} pokemonId - The ID of the Pokémon.
+ * @param {string} pokemonCry - The URL for the Pokémon's cry sound.
+ * @param {string} imgUrl - The URL of the Pokémon's image.
+ * @returns {string} The HTML template for the detail card header.
+ */
 function getDetailCardHeadTemplate(
   pokemonType,
   pokemonName,
@@ -87,6 +110,16 @@ function getDetailCardHeadTemplate(
 `;
 }
 
+/**
+ * Generates the HTML template for the body section of the detail card.
+ * @param {string} heightInCentimeters - The height of the Pokémon in centimeters.
+ * @param {string} weightInKilograms - The weight of the Pokémon in kilograms.
+ * @param {string} regionName - The name of the region where the Pokémon is found.
+ * @param {number} generationNumber - The generation number of the Pokémon.
+ * @param {string} shinyImage - The URL for the shiny form image of the Pokémon.
+ * @param {Array<Object>} types - The list of Pokémon types.
+ * @returns {string} The HTML template for the detail card body.
+ */
 function getDetailCardBodyTemplate(
   heightInCentimeters,
   weightInKilograms,
@@ -145,6 +178,13 @@ function getDetailCardBodyTemplate(
   `;
 }
 
+/**
+ * Generates a configuration object for a radar chart displaying Pokémon stats.
+ * @param {Array<number>} statValues - An array of stat values (e.g., HP, Attack).
+ * @param {string} rgbaColor - RGBA color for chart background fill.
+ * @param {string} backgroundColor - RGB color for chart border and points.
+ * @returns {Object} Configuration object for Chart.js radar chart.
+ */
 function getRadarChartConfig(statValues, rgbaColor, backgroundColor) {
   return {
     type: "radar",
