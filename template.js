@@ -145,7 +145,7 @@ function getDetailCardBodyTemplate(
   `;
 }
 
-function getRadarChartConfigTemplate(statValues, rgbaColor, backgroundColor) {
+function getRadarChartConfig(statValues, rgbaColor, backgroundColor) {
   return {
     type: "radar",
     data: {
