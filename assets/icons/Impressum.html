@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!-- saved from url=(0039)http://127.0.0.1:5501/js/impressum.html -->
+<html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+      <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+      <link rel="shortcut icon" href="./Impressum_files/spellbook.png" type="image/x-icon">
+    <title>Impressum</title>
+
+    <link rel="stylesheet" href="./Impressum_files/impressum.css">
+
+    <style>
+      @font-face {
+        font-family: "magical_neverland";
+        src: url("../fonts/Magical Neverland.ttf");
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="header-logo">
+          <a href="http://127.0.0.1:5501/index.html"><img src="./Impressum_files/spellbook.png" alt="Zauberbuch"></a>
+          <p>Elara und der verzauberte Hain</p>
+        </div>
+      </div>
+    </header>
+    <main style="
+    flex-grow: 1;
+    max-width: 1440px;
+">
+      <div class="impressum">
+        <h1>Impressum</h1>
+
+        <p>
+          Stephanie Englberger<br>
+          Strümpfelbacher Str. 4<br>
+          71384 Weinstadt
+        </p>
+
+        <h2>Kontakt</h2>
+        <p>
+          Telefon: +49 (0) 1627119349<br>
+          E-Mail: stephaniekoebich@aol.com
+        </p>
+
+        <p>
+          Quelle:
+          <a href="https://www.e-recht24.de/impressum-generator.html">https://www.e-recht24.de/impressum-generator.html</a>
+        </p>
+      </div>
+    </main>
+    <!-- Footer Section -->
+    <footer>
+      <div class="footer_content">
+        <p>
+          <a href="http://127.0.0.1:5501/index.html" class="footer_link">Zurück zum Spiel</a>
+          | © 2025 Stephanie Englberger
+        </p>
+        <p>
+          Quellen für Bild und Sound:
+          <a href="https://pixabay.com/de//" target="_blank" class="footer_link">Pixabay</a>
+          | <a href="https://craftpix.net/" target="_blank" class="footer_link">Craftpix.NET</a>
+        </p>
+      </div>
+    </footer>
+  <!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+
+</body></html>

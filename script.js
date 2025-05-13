@@ -107,16 +107,37 @@ function appendCardsToWrapper(cards) {
 }
 
 /**
- * Loads all card images.
- * @param {Array} cards - Array of card elements.
+ * Loads all images in the given card elements and hides the loading hint.
+ * @param {Array<Element>} cards - Array of card elements.
  * @returns {Promise<void>}
  */
 async function loadAllCardImages(cards) {
-  const imagePromises = cards.map((card) => {
+  await Promise.all(cards.map(card => handleCardImage(card)));
+}
+
+/**
+ * Handles the loading of a single card image.
+ * @param {Element} card - The card element.
+ * @returns {Promise<void>}
+ */
+function handleCardImage(card) {
+  return new Promise(resolve => {
     const img = card.querySelector("img");
-    return img ? loadImage(img.src) : Promise.resolve();
+    if (!img) return resolve();
+    img.onload = () => { showImage(img); resolve(); };
+    img.onerror = resolve;
+    if (img.complete) { showImage(img); resolve(); }
   });
-  await Promise.all(imagePromises);
+}
+
+/**
+ * Hides the loading hint and shows the image.
+ * @param {HTMLImageElement} img - The image element.
+ */
+function showImage(img) {
+  const idx = img.id.split('_')[2];
+  document.getElementById(`loading_hint_${idx}`)?.classList.add("d_none");
+  img.classList.remove("d_none");
 }
 
 /**
@@ -322,6 +343,14 @@ function handleSearchError(error) {
  */
 function resetToCachedPokemon() {
   cardsWrapper.innerHTML = pokemonCache;
+
+    // Kritischer Schritt nach dem Wiederherstellen:
+  document.querySelectorAll('.pokemon_image').forEach(img => {
+    const card = img.closest('.cards_content');
+    const pokemonId = img.id.split('_')[2];
+    setupImageLoading(card, pokemonId); // Event-Listener neu setzen
+  });
+
   document.getElementById("load_more_button").style.display = "block";
 }
 

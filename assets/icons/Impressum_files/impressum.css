@@ -1,0 +1,52 @@
+body {
+  font-family: "magical_neverland", Arial, Helvetica, sans-serif;
+  height: 100vh;
+  margin: 0;
+  background-image: url("../assets/img/backgrounds/bg_forest.jpg");
+  background-position: center;
+}
+
+h2 {
+  font-size: 24px;
+  margin-top: 36px;
+  text-align: center;
+}
+
+p {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.impressum {
+  width: 100%;
+  padding: 16px;
+  max-width: 1440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  text-align: left;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.header-logo {
+  display: flex;
+  gap: 36px;
+  padding: 16px;
+  max-width: 1440px;
+}
+
+.header-logo > a > img {
+  width: 36px;
+  height: 36px;
+}
