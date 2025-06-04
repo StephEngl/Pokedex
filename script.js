@@ -182,6 +182,47 @@ async function fetchPokemonDetails(url) {
 }
 
 /**
+ * Holt und transformiert die Evolution Chain eines Pokémon in ein flaches Array.
+ * @param {string} speciesUrl - Die URL aus pokemon.species.url
+ * @returns {Promise<Array>} Die vereinfachte Entwicklungskette
+ */
+async function fetchAndTransformEvolutionChain(speciesUrl) {
+  // Hole die Species-Daten
+  const speciesResponse = await fetch(speciesUrl);
+  const speciesData = await speciesResponse.json();
+
+  // Hole die Evolution Chain
+  const evoChainUrl = speciesData.evolution_chain.url;
+  const evoResponse = await fetch(evoChainUrl);
+  const evoData = await evoResponse.json();
+
+  const result = [];
+  traverse(evoData.chain, result);
+  return result;
+}
+
+  // Hilfsfunktion für die Transformation
+function traverse(node, result) {
+    const from = node.species.name;
+    const evolves_to = node.evolves_to.map(evo => {
+      // Bestimme die Methode
+      let method = "other";
+      if (evo.evolution_details && evo.evolution_details.length > 0) {
+        const trigger = evo.evolution_details[0].trigger.name;
+        if (trigger === "level-up") method = "level";
+        if (trigger === "use-item") method = "item";
+      }
+      return {
+        to: evo.species.name,
+        method: method
+      };
+    });
+    result.push({ from, evolves_to });
+    // Rekursion für jede nächste Entwicklungsstufe
+    node.evolves_to.forEach(traverse);
+  }
+
+/**
  * Creates a Pokemon card element.
  * @param {Object} pokemonDetails - Detailed Pokemon data.
  * @param {string} pokemonUrl - URL of the Pokemon data.
