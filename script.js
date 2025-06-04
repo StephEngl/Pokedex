@@ -112,7 +112,7 @@ function appendCardsToWrapper(cards) {
  * @returns {Promise<void>}
  */
 async function loadAllCardImages(cards) {
-  await Promise.all(cards.map(card => handleCardImage(card)));
+  await Promise.all(cards.map((card) => handleCardImage(card)));
 }
 
 /**
@@ -121,12 +121,18 @@ async function loadAllCardImages(cards) {
  * @returns {Promise<void>}
  */
 function handleCardImage(card) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const img = card.querySelector("img");
     if (!img) return resolve();
-    img.onload = () => { showImage(img); resolve(); };
+    img.onload = () => {
+      showImage(img);
+      resolve();
+    };
     img.onerror = resolve;
-    if (img.complete) { showImage(img); resolve(); }
+    if (img.complete) {
+      showImage(img);
+      resolve();
+    }
   });
 }
 
@@ -135,7 +141,7 @@ function handleCardImage(card) {
  * @param {HTMLImageElement} img - The image element.
  */
 function showImage(img) {
-  const idx = img.id.split('_')[2];
+  const idx = img.id.split("_")[2];
   document.getElementById(`loading_hint_${idx}`)?.classList.add("d_none");
   img.classList.remove("d_none");
 }
@@ -187,40 +193,56 @@ async function fetchPokemonDetails(url) {
  * @returns {Promise<Array>} Die vereinfachte Entwicklungskette
  */
 async function fetchAndTransformEvolutionChain(speciesUrl) {
-  // Hole die Species-Daten
+  // 1. Hole die Species-Daten (für das aktuelle Pokémon)
   const speciesResponse = await fetch(speciesUrl);
   const speciesData = await speciesResponse.json();
 
-  // Hole die Evolution Chain
+  // 2. Hole die URL zur Evolution Chain
   const evoChainUrl = speciesData.evolution_chain.url;
   const evoResponse = await fetch(evoChainUrl);
   const evoData = await evoResponse.json();
 
+  // 3. Erstelle ein leeres Array für das Ergebnis
   const result = [];
+
+  // 4. Starte die Traversierung ab dem Wurzelknoten der Kette
   traverse(evoData.chain, result);
+
+  // 5. Gib das Array zurück
   return result;
 }
 
-  // Hilfsfunktion für die Transformation
+// Hilfsfunktion für die Transformation
 function traverse(node, result) {
-    const from = node.species.name;
-    const evolves_to = node.evolves_to.map(evo => {
-      // Bestimme die Methode
-      let method = "other";
-      if (evo.evolution_details && evo.evolution_details.length > 0) {
-        const trigger = evo.evolution_details[0].trigger.name;
-        if (trigger === "level-up") method = "level";
-        if (trigger === "use-item") method = "item";
-      }
-      return {
-        to: evo.species.name,
-        method: method
-      };
-    });
-    result.push({ from, evolves_to });
-    // Rekursion für jede nächste Entwicklungsstufe
-    node.evolves_to.forEach(traverse);
-  }
+  // 1. Name des aktuellen Pokémon
+  const from = node.species.name;
+  // 2. Erstelle ein Array mit allen direkten Entwicklungen
+  const evolves_to = node.evolves_to.map((evo) => {
+    // Bestimme die Methode
+    let method = "other";
+    if (evo.evolution_details && evo.evolution_details.length > 0) {
+      const trigger = evo.evolution_details[0].trigger.name;
+      if (trigger === "level-up") method = "level";
+      if (trigger === "use-item") method = "item";
+    }
+    return {
+      to: evo.species.name,
+      method: method,
+    };
+  });
+  // 3. Füge das aktuelle Entwicklungsobjekt zum Ergebnis-Array hinzu
+  result.push({ from, evolves_to });
+  // 4. Rufe traverse rekursiv für jede direkte Entwicklung auf
+  node.evolves_to.forEach(traverse);
+}
+
+// Beispielaufruf für Oddish (Nr. 43)
+fetchAndTransformEvolutionChain(
+  "https://pokeapi.co/api/v2/pokemon-species/43/"
+).then((chain) => {
+  console.log(chain);
+  // Hier kannst du das Array direkt für deine Detailkarten verwenden
+});
 
 /**
  * Creates a Pokemon card element.
@@ -385,10 +407,10 @@ function handleSearchError(error) {
 function resetToCachedPokemon() {
   cardsWrapper.innerHTML = pokemonCache;
 
-    // Kritischer Schritt nach dem Wiederherstellen:
-  document.querySelectorAll('.pokemon_image').forEach(img => {
-    const card = img.closest('.cards_content');
-    const pokemonId = img.id.split('_')[2];
+  // Kritischer Schritt nach dem Wiederherstellen:
+  document.querySelectorAll(".pokemon_image").forEach((img) => {
+    const card = img.closest(".cards_content");
+    const pokemonId = img.id.split("_")[2];
     setupImageLoading(card, pokemonId); // Event-Listener neu setzen
   });
 
@@ -423,7 +445,10 @@ async function renderFilteredPokemonCards(filteredPokemon) {
       const pokemonDetails = await getPokemonDetails(pokemonUrl);
       appendPokemonCard(pokemonDetails, pokemonUrl);
     } catch (error) {
-      console.warn(`Fehler beim Laden der Details für ${pokemonData.name}:`, error);
+      console.warn(
+        `Fehler beim Laden der Details für ${pokemonData.name}:`,
+        error
+      );
     }
   }
   hideLoadMoreButton();
