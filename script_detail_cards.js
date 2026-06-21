@@ -28,6 +28,27 @@ function onMouseDown(event) {
  * @param {string} pokemonUrl - The URL for the Pokémon details.
  * @returns {Promise<void>}
  */
+const TYPE_COLORS = {
+  grass: "#49d0b0",
+  fire: "#fc6c6c",
+  water: "#76befe",
+  electric: "#ffd672",
+  normal: "#b6b58f",
+  ice: "#96d9d6",
+  fighting: "#c22e28",
+  poison: "#a33ea1",
+  ground: "#e2bf65",
+  flying: "#a98ff3",
+  psychic: "#f95587",
+  bug: "#a6b91a",
+  rock: "#b6a136",
+  ghost: "#735797",
+  dragon: "#6f35fc",
+  dark: "#705746",
+  steel: "#b7b7ce",
+  fairy: "#d685ad",
+};
+
 async function renderDetailCard(pokemonId, pokemonUrl) {
   try {
     let pokemonDetail = await fetchPokemonDetails(pokemonUrl);
@@ -36,6 +57,9 @@ async function renderDetailCard(pokemonId, pokemonUrl) {
     document
       .getElementById("detail_card")
       .classList.add("detail_card", `bg_${pokemonType}`);
+    document
+      .getElementById("detail_card")
+      .style.setProperty("--scrollbar-color", TYPE_COLORS[pokemonType] ?? "#49d0b0");
     renderDetailCardHead(pokemonDetail, pokemonId);
     renderDetailCardBody(pokemonDetail, pokemonType);
   } catch (error) {
